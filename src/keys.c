@@ -41,6 +41,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "irc.h"
 #include "qtv.h"
 #include "utils.h"
+#ifdef CAMQUAKE
+#include "camquake/camquake.h"
+#endif
 
 extern cvar_t sys_disable_alt_enter;
 
@@ -1985,6 +1988,10 @@ static qbool Mouse_EventDispatch(void)
 			break;
 		case key_hudeditor: 
 			mouse_handled = HUD_Editor_MouseEvent(&scr_pointer_state);
+#ifdef CAMQUAKE
+		case key_camquake:
+			mouse_handled = Camquake_MouseEvent(&scr_pointer_state);
+#endif
 			break;
 		case key_demo_controls:
 			mouse_handled = DemoControls_MouseEvent(&scr_pointer_state);
@@ -2150,7 +2157,11 @@ void Key_EventEx (int key, wchar unichar, qbool down)
 			case key_demo_controls:
 				DemoControls_KeyEvent(key, unichar, down);
 				break;
-
+#ifdef CAMQUAKE
+			case key_camquake:
+				Camquake_KeyEvent(key, unichar, down);
+				break;
+#endif
 			default:
 				assert(!"Bad key_dest");
 		}
@@ -2303,6 +2314,11 @@ void Key_EventEx (int key, wchar unichar, qbool down)
 			Cbuf_AddText("togglemenu\n");
 			break;
 
+#ifdef CAMQUAKE
+		case key_camquake:
+			Camquake_KeyEvent(key, unichar, down);
+			break;
+#endif
 		default:
 			assert(!"Bad key_dest");
 	}

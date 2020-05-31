@@ -70,6 +70,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "r_renderer.h"
 #include "r_performance.h"
 #include "r_program.h"
+#ifdef CAMQUAKE
+#include "camquake/camquake.h"
+#endif
 
 extern qbool ActiveApp, Minimized;
 
@@ -2045,6 +2048,10 @@ void CL_Init (void)
 	Ignore_Init();
 	Log_Init();
 	Movie_Init();
+
+#ifdef CAMQUAKE
+	Camquake_Init();
+#endif
 
 #ifdef _DEBUG
 	if (Expr_Run_Unit_Tests() != 0) {

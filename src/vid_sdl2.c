@@ -253,7 +253,11 @@ static qbool IN_OSMouseCursorRequired(void)
 // True if we're in a mode where we need to keep track of mouse movement
 qbool IN_MouseTrackingRequired(void)
 {
-	return (key_dest == key_menu || key_dest == key_hudeditor || key_dest == key_demo_controls);
+	return (key_dest == key_menu || key_dest == key_hudeditor || key_dest == key_demo_controls
+#ifdef CAMQUAKE
+		|| key_dest == key_camquake
+#endif
+		);
 }
 
 // True if we need to display the internal Quake cursor to track the mouse

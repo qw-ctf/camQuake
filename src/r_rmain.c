@@ -42,6 +42,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "r_lightmaps.h"
 #include "r_trace.h"
 #include "r_renderer.h"
+#ifdef CAMQUAKE
+#include "camquake/camquake.h"
+#endif
 
 #define R_FogAvailable() (!COM_CheckParm(cmdline_param_client_nomultitexturing))
 
@@ -359,9 +362,13 @@ void R_SetupFrame(void)
 
 	r_framecount++;
 
+#ifdef CAMQUAKE
+		Camquake_Frame();
+#endif
 	// build the transformation matrix for the given view angles
 	VectorCopy (r_refdef.vieworg, r_origin);
 	AngleVectors (r_refdef.viewangles, vpn, vright, vup);
+
 	if (r_refdef.viewangles[ROLL] != 0) {
 		vec3_t noroll_angles = { r_refdef.viewangles[0], r_refdef.viewangles[1], 0 };
 
@@ -802,6 +809,9 @@ void R_PostProcessScene(void)
 
 static void R_Render3DEffects(void)
 {
+#ifdef CAMQUAKE
+	Camquake_Render_Frame();
+#endif
 	// Adds particles (all types)
 	R_DrawParticles();
 
@@ -810,6 +820,7 @@ static void R_Render3DEffects(void)
 
 	// Run corona logic
 	R_DrawCoronas();
+
 }
 
 static void R_Render3DHud(void)
@@ -822,6 +833,9 @@ static void R_Render3DHud(void)
 	// While still in 3D mode, calculate the location of labels to be printed in 2D
 	SCR_SetupAutoID();
 	SCR_SetupDamageIndicators();
+#ifdef CAMQUAKE
+	Camquake_Setup_Projection();
+#endif
 }
 
 void R_RenderView(void)
