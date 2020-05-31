@@ -223,7 +223,8 @@ typedef enum {
 	key_startupdemo_menu,
 	key_startupdemo_console,
 	key_startupdemo_game,
-	key_startupdemo_browser
+	key_startupdemo_browser,
+	key_camquake
 } keydest_t;
 
 #define KeyDestStartupDemo(x) ((x) >= key_startupdemo_menu && (x) <= key_startupdemo_browser)
