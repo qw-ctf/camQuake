@@ -53,6 +53,10 @@ $Id: cl_screen.c,v 1.156 2007-10-29 00:56:47 qqshka Exp $
 #include "server.h"
 #endif
 
+#ifdef CAMQUAKE
+#include "camquake/camquake.h"
+#endif
+
 void WeaponStats_CommandInit(void);
 void SCR_DrawHud(void);
 void SCR_DrawClocks(void);
@@ -830,6 +834,9 @@ static void SCR_DrawElements(void)
 		}
 
 		SCR_DrawCursor();
+#ifdef CAMQUAKE
+		Camquake_2D_Draw();
+#endif
 	}
 }
 

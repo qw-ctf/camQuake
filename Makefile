@@ -568,6 +568,18 @@ endif
 #    LIBS_c += $(OGG_LIBS)
 #endif
 
+ifdef CAMQUAKE
+    EZ_POSTFIX := "-camquake"
+    OBJS_c += camquake/camquake.o
+    OBJS_c += camquake/camquake_path.o
+    OBJS_c += camquake/camquake_setup.o
+    OBJS_c += camquake/camquake_command.o
+    OBJS_c += camquake/camquake_glc.o
+    OBJS_c += camquake/camquake_input.o
+    OBJS_c += camquake/camquake_2d.o
+    CFLAGS += -DCAMQUAKE
+endif
+
 ### Targets ###
 
 ifdef CONFIG_WINDOWS

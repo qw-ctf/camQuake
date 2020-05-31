@@ -146,7 +146,7 @@ int StringToRGB_W(char *s, byte *rgb)
 	result = strtok(buf, " ");
 
 	for (i = 0; i < 4 && result; i++, result = strtok(NULL, " ")) {
-		rgb[i] = (byte) Q_atoi(result);
+		rgb[i] = (byte) Q_atof(result);
 	}
 
 	// TODO: Ok to do this in software also?
