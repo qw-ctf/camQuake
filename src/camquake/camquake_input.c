@@ -123,18 +123,36 @@ qbool Camquake_MouseEvent(mouse_state_t *ms)
 	cursor.x = ms->x;
 	cursor.y = ms->y;
 	cursor.z = 0;
-	if (ms->buttons[1]) {
-		if (camquake->selected_point) {
-			x = (ms->x - ms->x_old) * cls.frametime * camquake->edit.movement_multiplier;
-			y = (ms->y - ms->y_old) * cls.frametime * camquake->edit.movement_multiplier;
+
+	if (ms->button_up == 1) {
+		camquake->selected_point = NULL;
+	}
+
+	if (camquake->selected_point) {
+		if (ms->buttons[1]) {
+			if (ms->button_down == 1) {
+				camquake->edit.cursor_initial.x = ms->x_old;
+				camquake->edit.cursor_initial.y = ms->y_old;
+				camquake->edit.cursor_old.x = ms->x;
+				camquake->edit.cursor_old.y = ms->y;
+			}
+			x = ms->x - camquake->edit.cursor_old.x;
+			x = x * cls.frametime * camquake->edit.movement_multiplier * 1000;
+			y = ms->y - camquake->edit.cursor_old.y;
+			y = y * cls.frametime * camquake->edit.movement_multiplier * 1000;
 			Camquake_Move_Path(x, y, camquake->selected_point, camquake->selected_path); 
-			ms->x = ms->x_old;
-			ms->y = ms->y_old;
 			camquake->setup_projection = 1;
 			camquake->selected_setup->changed = 1;
+			camquake->edit.cursor_old.x = ms->x;
+			camquake->edit.cursor_old.y = ms->y;
+
+			ms->x = ms->x_old = camquake->edit.cursor_initial.x; 
+			ms->y = ms->y_old = camquake->edit.cursor_initial.y; 
+			return true;
 		}
-		return true;
 	} else {
+		camquake->edit.cursor_initial.x = 0;
+		camquake->edit.cursor_initial.y = 0;
 		Camquake_Find_Highlight(&cursor);
 	}
 	return false;
