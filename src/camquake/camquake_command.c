@@ -86,15 +86,23 @@ void Camquake_Print_Setup(struct camquake_setup *setup) {
 	struct camquake_path_point *p;
 	Com_Printf("%s:\n", setup->name);
 	Com_Printf("time: %f - %f\n", setup->time_start, setup->time_stop);
-	Com_Printf("camera: %d points.\n", setup->camera_path.path->index);
-	for (i=0; i<setup->camera_path.path->index; i++) {
+	if (setup->camera_path.path) {
+	    Com_Printf("camera: %d points.\n", setup->camera_path.path->index);
+	    for (i=0; i<setup->camera_path.path->index; i++) {
 		p = &setup->camera_path.path->point[i];
 		Com_Printf("      %f %f %f\n", p->x, p->y, p->z);
+	    }
+	} else { 
+	    Com_Printf("camera: no points.\n");
 	}
-	Com_Printf("view: %d points.\n", setup->view_path.path->index);
-	for (i=0; i<setup->view_path.path->index; i++) {
-		p = &setup->view_path.path->point[i];
-		Com_Printf("      %f %f %f\n", p->x, p->y, p->z);
+	if (setup->view_path.path) {
+	    Com_Printf("view: %d points.\n", setup->view_path.path->index);
+	    for (i=0; i<setup->view_path.path->index; i++) {
+		    p = &setup->view_path.path->point[i];
+		    Com_Printf("      %f %f %f\n", p->x, p->y, p->z);
+	    }
+	} else {
+	    Com_Printf("view: no points.\n");
 	}
 }
 
@@ -128,7 +136,7 @@ void Camquake_Setup(void) {
 			return;
 		}
 		setup = camquake->setup;
-		while (setup) {
+		while (setup != NULL) {
 			Camquake_Print_Setup(setup);
 			setup = setup->next;
 		}
