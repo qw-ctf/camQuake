@@ -61,6 +61,8 @@ struct camquake_edit_mode {
   float movement_multiplier;
   int help;
   int move_path;
+  struct camquake_path_point cursor_old;
+  struct camquake_path_point cursor_initial;
 };
 
 struct camquake {
