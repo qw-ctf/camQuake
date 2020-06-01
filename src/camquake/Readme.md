@@ -47,6 +47,10 @@ you can change the movement directions by pressing 1|2.  Available directions ar
   pressing ```3``` will allow you to switch between moving a point and moving the whole path.
   ```4``` and ```5``` will divide/multiply the movement multiplier by 10
  
+   
+# saving  
+you can save a setup with ```camquake write "my_cam"``` it will be written to ```camquake/my_cam.cfg``` you then can just ```exec camquake/my_cam.cfg``` to reload it  
+you can save a setup to a different name too with ```camquake write "my_cam" "new_name"``` will write to ```camquake/new_name.cfg``` the setup will also be named new_name on load
 
 
 

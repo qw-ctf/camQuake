@@ -38,6 +38,7 @@ void Camquake_Available_Commands(void) {
 	Com_Printf("play\n");
 	Com_Printf("select\n");
 	Com_Printf("edit\n");
+	Com_Printf("write\n");
 }
 
 void Camquake_Help(void) {
@@ -47,6 +48,23 @@ void Camquake_Help(void) {
 
 void Camquake_Help_Edit(void) {
 	Com_Printf("enter edit mode\n");
+}
+
+
+void Camquake_Help_Write(void) {
+	Com_Printf("save a setup to a config\n");
+	Com_Printf("camquake write my_cam -- will write my_cam to camquake/my_cam.cfg");
+	Com_Printf("camquake write my_cam new_name -- will write my_cam to camquake/new_name.cfg");
+}
+
+void Camquake_Help_Select(void) {
+	Com_Printf("select a setup for rendering/editing\n");
+	Com_Printf("camquake select my_cam");
+}
+
+void Camquake_Help_Play(void) {
+	Com_Printf("start playing a setup\n");
+	Com_Printf("camquake play my_cam");
 }
 
 void Camquake_Help_Setup(void) {
@@ -273,7 +291,6 @@ void Camquake_Select(void) {
 
 
 void Camquake_Cmd(void) {
-	Com_Printf("%d\n", Cmd_Argc());
 	if (Cmd_Argc() < 2) {
 		Camquake_Available_Commands();
 		return;
@@ -289,6 +306,18 @@ void Camquake_Cmd(void) {
 		}
 		if (strcmp(Cmd_Argv(2), "edit") == 0) {
 			Camquake_Help_Edit();
+			return;
+		}
+		if (strcmp(Cmd_Argv(2), "write") == 0) {
+			Camquake_Help_Write();
+			return;
+		}
+		if (strcmp(Cmd_Argv(2), "select") == 0) {
+			Camquake_Help_Select();
+			return;
+		}
+		if (strcmp(Cmd_Argv(2), "play") == 0) {
+			Camquake_Help_Play();
 			return;
 		}
 		Camquake_Help();
