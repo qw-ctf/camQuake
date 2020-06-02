@@ -124,7 +124,7 @@ qbool Camquake_MouseEvent(mouse_state_t *ms)
 	cursor.y = ms->y;
 	cursor.z = 0;
 
-	if (ms->button_up == 1) {
+	if (ms->button_up == 1 || !ms->buttons[1]) {
 		camquake->selected_point = NULL;
 	}
 
@@ -137,9 +137,9 @@ qbool Camquake_MouseEvent(mouse_state_t *ms)
 				camquake->edit.cursor_old.y = ms->y;
 			}
 			x = ms->x - camquake->edit.cursor_old.x;
-			x = x * cls.frametime * camquake->edit.movement_multiplier * 1000;
+			x = x * cls.trueframetime * camquake->edit.movement_multiplier * 100;
 			y = ms->y - camquake->edit.cursor_old.y;
-			y = y * cls.frametime * camquake->edit.movement_multiplier * 1000;
+			y = y * cls.trueframetime * camquake->edit.movement_multiplier * 100;
 			Camquake_Move_Path(x, y, camquake->selected_point, camquake->selected_path); 
 			camquake->setup_projection = 1;
 			camquake->selected_setup->changed = 1;
