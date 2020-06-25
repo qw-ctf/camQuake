@@ -2,7 +2,7 @@
 
 ## Workflow
 enable camquake, none of the "camquake" comamnds will work without this  
-```camquake_enable 1```  
+```camquake_enabled 1```  
 
 enable rendering  
 ```camquake_render 1```  
@@ -22,7 +22,7 @@ for example, to set a camera point directly:
 to set a view point directly:  
 ```camquake setup add_view_point "my_cam" 249.264099 30.651236 -219.774139```  
 a convinient setup is to bind these to a key:  
-```bind mouse1 "camquake setup add_camera_point current; camquake setup add_view_point current"```  
+```bind mouse1 "camquake setup add_camera_point my_cam current; camquake setup add_view_point my_cam current"```  
 
 the interpolation between path points is handled differently depending on the amounts of points in a path:  
 - 1 Point:  Stationary
