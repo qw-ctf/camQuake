@@ -64,6 +64,12 @@ int CQP_Point_Remove_Index(struct camquake_path_point_array **path_point_array, 
 	return 0;
 }
 
+void CQP_Free(struct camquake_path *path) {
+	free(path->path);
+	free(path->interpolated_array);
+	free(path->projected_points);
+}
+
 void CQP_Print(struct camquake_path_point_array *path_point_array)
 {
 	int i;
