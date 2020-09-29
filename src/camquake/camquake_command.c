@@ -126,10 +126,13 @@ void Camquake_Setup(void) {
 		}
 		Com_Printf("setup \"%s\" added.\n", Cmd_Argv(3));
 	} else if (strcmp(Cmd_Argv(2), "remove") == 0) {
-		if (Cmd_Argc() != 3) {
-			Camquake_Help_Setup();
+	    Com_Printf("something something\n");
+		if (Cmd_Argc() != 4) {
+			Com_Printf("camquake remove \"setup name\"\n");
 			return;
 		}
+		CQS_Remove(&camquake->setup, Cmd_Argv(3));
+		Com_Printf("setup \"%s\" removed.\n", Cmd_Argv(3));
 	} else if (strcmp(Cmd_Argv(2), "list") == 0) {
 		if (camquake->setup == NULL) {
 			Com_Printf("no setups available.\n");

@@ -160,3 +160,35 @@ struct camquake_setup *CQS_Find(struct camquake_setup **first, char *name) {
 	return NULL;
 }
 
+void CQS_Free(struct camquake_setup *setup) {
+	if (setup->name) {
+		free(setup->name);
+	}
+	CQP_Free(&setup->camera_path);
+	CQP_Free(&setup->view_path);
+	free(setup);
+}
+
+void CQS_Remove(struct camquake_setup **first, char *name) {
+	struct camquake_setup *last, *current;
+	last = NULL;
+	current = *first;
+	while (current) {
+		if (strcmp(current->name, name) == 0) {
+			break;
+		}
+		last = current;
+		current = current->next;
+	}
+	if (current == NULL) {
+		return;
+	}
+	if (last != NULL) {
+		last->next = current->next;
+	} else {
+		*first = current->next;
+	}
+	CQS_Free(current);
+}
+
+
