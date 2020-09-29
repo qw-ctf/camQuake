@@ -89,8 +89,10 @@ struct camquake_path_point *CQP_Point_New(struct camquake_path_point_array **pat
 int CQP_Point_Remove_Index(struct camquake_path_point_array **path_point_array, unsigned int position);
 struct camquake_path_point *CQP_Point_New_Index(struct camquake_path_point_array **path_point_array, unsigned int index);
 void CQP_Print(struct camquake_path_point_array *path_point_array);
+void CQP_Free(struct camquake_path *path);
 struct camquake_setup *CQS_New(struct camquake_setup **first, char *name);
 struct camquake_setup *CQS_Find(struct camquake_setup **first, char *name);
+void CQS_Remove(struct camquake_setup **first, char *name);
 void Camquake_Cmd(void);
 void Camquake_Render_Setup (struct camquake_setup *setup);
 void CQS_Interpolate_Path(struct camquake_path_point_array *path, float t, struct camquake_path_point *out);
