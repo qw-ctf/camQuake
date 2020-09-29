@@ -155,7 +155,7 @@ qbool Camquake_MouseEvent(mouse_state_t *ms)
 		camquake->edit.cursor_initial.y = 0;
 		Camquake_Find_Highlight(&cursor);
 	}
-	return false;
+	return true;
 }
 
 qbool Camquake_KeyEvent(int key, int unichar, qbool down)

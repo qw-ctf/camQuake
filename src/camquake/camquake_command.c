@@ -298,6 +298,7 @@ void Camquake_Select(void) {
 		return;
 	}
 	camquake->selected_setup = setup;
+	Com_Printf("setup \"%s\" selected.\n");
 }
 
 
