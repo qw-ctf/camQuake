@@ -23,10 +23,9 @@ void Camquake_2D_Draw(void)
 	int *lptr = &line;
 
 
-	if (camquake->have_input != 1) {
+	if (camquake->have_input < 1) {
 		return;
 	}
-
 
 	draw_on_screen(lptr, "camquake edit mode (press f1 %s help/escape to exit)", camquake->edit.help ? "to close" : "for");
 	draw_on_screen(lptr, "movement: direction(%s) mode(%s) modifier(%f)", movement_types[camquake->edit.movement_axis], camquake->edit.move_path ? "path" : "point", camquake->edit.movement_multiplier);
