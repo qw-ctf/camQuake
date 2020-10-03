@@ -13,16 +13,14 @@ void Camquake_Write_Config(struct camquake_setup *setup, char *name) {
     snprintf(filepath, sizeof(filepath), "%s/camquake/%s.cfg", com_basedir, name);
     if ((f = fopen(filepath, "w")) != NULL) {
 	    fprintf(f, "camquake setup add \"%s\"\n", name);
-	    fprintf(f, "camquake setup start_time \"%s\" %f\n", name, setup->time_start);
-	    fprintf(f, "camquake setup stop_time \"%s\" %f\n", name, setup->time_stop);
 
 	    for (i=0; i<setup->camera_path.path->index; i++) {
 		    p = &setup->camera_path.path->point[i];
-		    fprintf(f, "camquake setup add_camera_point \"%s\" %f %f %f\n", name, p->x, p->y, p->z);
+		    fprintf(f, "camquake setup add_camera_point \"%s\" %f %f %f %f\n", name, p->x, p->y, p->z, p->time);
 	    }
 	    for (i=0; i<setup->view_path.path->index; i++) {
 		    p = &setup->view_path.path->point[i];
-		    fprintf(f, "camquake setup add_view_point \"%s\" %f %f %f\n", name, p->x, p->y, p->z);
+		    fprintf(f, "camquake setup add_view_point \"%s\" %f %f %f %f\n", name, p->x, p->y, p->z, p->time);
 	    }
 	    fclose(f);
 	    Com_Printf("setup \'%s\" saved as \"%s\" in \"%s\"", setup->name, name, filepath);
@@ -71,10 +69,8 @@ void Camquake_Help_Setup(void) {
 	Com_Printf("available setup commands:\n");
 	Com_Printf("add [name] -- adds a new setup\n");
 	Com_Printf("remove [name] -- removes the setup\n");
-	Com_Printf("start_time [name] [now|x.x] -- sets start time to current demotime with \"now\" or some arbitary float value\n");
-	Com_Printf("stop_time [name] [now|x.x] -- sets stop time to current demotime with \"now\" or some arbitary float value\n");
-	Com_Printf("add_view_point [name] [current|x y z] -- adds a point to the view path. \"current\" sets the point to 50px infront of you, \"x y z\" sets it to absolute coordinates \n");
-	Com_Printf("add_camera_point [name] [current|x y z] -- adds a point to the camera path. \"current\" sets the point your current location, \"x y z\" sets it to absolute coordinates \n");
+	Com_Printf("add_view_point [name] [current|x y z t] -- adds a point to the view path. \"current\" sets the point to 50px infront of you and the time, \"x y z t\" sets it to absolute coordinates and time\n");
+	Com_Printf("add_camera_point [name] [current|x y z] -- adds a point to the camera path. \"current\" sets the point your current location and time, \"x y z t\" sets it to absolute coordinates and time\n");
 	Com_Printf("list -- list available setups\n");
 }
 
@@ -90,7 +86,7 @@ void Camquake_Print_Setup(struct camquake_setup *setup) {
 	    Com_Printf("camera: %d points.\n", setup->camera_path.path->index);
 	    for (i=0; i<setup->camera_path.path->index; i++) {
 		p = &setup->camera_path.path->point[i];
-		Com_Printf("      %f %f %f\n", p->x, p->y, p->z);
+		Com_Printf("      %f %f %f - %f\n", p->x, p->y, p->z, p->time);
 	    }
 	} else { 
 	    Com_Printf("camera: no points.\n");
@@ -114,6 +110,8 @@ void Camquake_Edit(void) {
 void Camquake_Setup(void) {
 	struct camquake_setup *setup;
 	struct camquake_path_point *point;
+	int i;
+
 	if (strcmp(Cmd_Argv(2), "add") == 0) {
 		if (Cmd_Argc() <= 3) {
 			Camquake_Help_Setup();
@@ -154,42 +152,8 @@ void Camquake_Setup(void) {
 			setup = setup->next;
 		}
 
-	} else if (strcmp(Cmd_Argv(2), "start_time") == 0) {
-		if (Cmd_Argc() != 5) {
-			Camquake_Help_Setup();
-			return;
-		}
-		setup = CQS_Find(&camquake->setup, Cmd_Argv(3));
-		if (setup == NULL) {
-			Com_Printf("setup \"%s\" not found\n", Cmd_Argv(3));
-			return;
-		}
-		if (strcmp(Cmd_Argv(4), "now") == 0) {
-			setup->time_start = cls.demotime;
-		} else {
-			setup->time_start = atof(Cmd_Argv(4));
-		}
-		setup->changed = 1;
-		return;
-	} else if (strcmp(Cmd_Argv(2), "stop_time") == 0) {
-		if (Cmd_Argc() != 5) {
-			Camquake_Help_Setup();
-			return;
-		}
-		setup = CQS_Find(&camquake->setup, Cmd_Argv(3));
-		if (setup == NULL) {
-			Com_Printf("setup \"%s\" not found\n", Cmd_Argv(3));
-			return;
-		}
-		if (strcmp(Cmd_Argv(4), "now") == 0) {
-			setup->time_stop = cls.demotime;
-		} else {
-			setup->time_stop = atof(Cmd_Argv(4));
-		}
-		setup->changed = 1;
-		return;
 	} else if (strcmp(Cmd_Argv(2), "add_camera_point") == 0) {
-		if (Cmd_Argc() < 5 || Cmd_Argc() > 7) {
+		if (Cmd_Argc() < 5 || Cmd_Argc() > 8) {
 			Camquake_Help_Setup();
 			return;
 		}
@@ -207,10 +171,17 @@ void Camquake_Setup(void) {
 			point->x = r_refdef.vieworg[0];
 			point->y = r_refdef.vieworg[1];
 			point->z = r_refdef.vieworg[2];
+			point->time = cls.demotime;
+			if (setup->time_start == 0) {
+			    setup->time_start= point->time;
+			}
+			if (setup->time_stop <= point->time) {
+			    setup->time_stop = point->time;
+			}
 			setup->changed = 1;
 			return;
 		} else {
-			if (Cmd_Argc() != 7) {
+			if (Cmd_Argc() != 8) {
 				Camquake_Help_Setup();
 				return;
 			}
@@ -222,11 +193,18 @@ void Camquake_Setup(void) {
 			point->x = atof(Cmd_Argv(4));
 			point->y = atof(Cmd_Argv(5));
 			point->z = atof(Cmd_Argv(6));
+			point->time = atof(Cmd_Argv(7));
+			if (setup->time_start == 0) {
+			    setup->time_start= point->time;
+			}
+			if (setup->time_stop <= point->time) {
+			    setup->time_stop = point->time;
+			}
 			setup->changed = 1;
 			return;
 		}
 	} else if (strcmp(Cmd_Argv(2), "add_view_point") == 0) {
-		if (Cmd_Argc() < 5 || Cmd_Argc() > 7) {
+		if (Cmd_Argc() < 5 || Cmd_Argc() > 8) {
 			Camquake_Help_Setup();
 			return;
 		}
@@ -247,10 +225,17 @@ void Camquake_Setup(void) {
 			point->x = forward[0] * 150 + r_refdef.vieworg[0];
 			point->y = forward[1] * 150 + r_refdef.vieworg[1];
 			point->z = forward[2] * 150 + r_refdef.vieworg[2];
+			point->time = cls.demotime;
+			if (setup->time_start == 0) {
+			    setup->time_start= point->time;
+			}
+			if (setup->time_stop <= point->time) {
+			    setup->time_stop = point->time;
+			}
 			setup->changed = 1;
 			return;
 		} else {
-			if (Cmd_Argc() != 7) {
+			if (Cmd_Argc() != 8) {
 				Camquake_Help_Setup();
 				return;
 			}
@@ -262,6 +247,13 @@ void Camquake_Setup(void) {
 			point->x = atof(Cmd_Argv(4));
 			point->y = atof(Cmd_Argv(5));
 			point->z = atof(Cmd_Argv(6));
+			point->time = atof(Cmd_Argv(7));
+			if (setup->time_start == 0) {
+			    setup->time_start= point->time;
+			}
+			if (setup->time_stop <= point->time) {
+			    setup->time_stop = point->time;
+			}
 			setup->changed = 1;
 			return;
 		}
@@ -313,6 +305,7 @@ void Camquake_Select(void) {
 
 
 void Camquake_Cmd(void) {
+	int i;
 	if (Cmd_Argc() < 2) {
 		Camquake_Available_Commands();
 		return;

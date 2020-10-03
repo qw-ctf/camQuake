@@ -43,5 +43,5 @@ void Camquake_2D_Draw(void)
 	}
 
 	if (camquake->selected_point)
-		draw_on_screen(lptr, "selected point: %f %f %f", camquake->selected_point->x, camquake->selected_point->y, camquake->selected_point->z);
+		draw_on_screen(lptr, "selected point: %f %f %f - %f", camquake->selected_point->x, camquake->selected_point->y, camquake->selected_point->z, camquake->selected_point->time);
 }

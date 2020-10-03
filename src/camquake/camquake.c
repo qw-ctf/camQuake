@@ -175,13 +175,28 @@ void Camquake_Init(void)
 void Camquake_Frame(void)
 {
 	float t = 0;
-	camquake->current_time += cls.trueframetime;
+	struct camquake_setup *current;
+	camquake->current_time += cls.frametime;
+	// used by "camquake play"
 	if (camquake->active_setup) {
-		if (camquake->current_time >= camquake->active_setup->time_start &&
-		camquake->current_time <= camquake->active_setup->time_stop) {
-			t = (camquake->current_time - camquake->active_setup->time_start) / (camquake->active_setup->time_stop - camquake->active_setup->time_start);
-
+		if (camquake->current_time <= camquake->active_setup->time_stop - camquake->active_setup->time_start) {
+			t = camquake->current_time + camquake->active_setup->time_start;
 			CQS_Interpolate(camquake->active_setup, t, (struct camquake_path_point *)&r_refdef.vieworg, (struct camquake_path_point *)&r_refdef.viewangles);
+			if (t >= 1.0) {
+				camquake->active_setup = NULL;
+			}
+		} else {
+			camquake->active_setup = NULL;
+		}
+	} else {
+		current = camquake->setup;
+		while (current != NULL) {
+			if (cls.demotime >= current->time_start && cls.demotime <= current->time_stop) {
+
+			t = (cls.demotime - current->time_start) / (current->time_stop - current->time_start);
+			CQS_Interpolate(current, t, (struct camquake_path_point *)&r_refdef.vieworg, (struct camquake_path_point *)&r_refdef.viewangles);
+			}
+			current = current->next;
 		}
 	}
 }
