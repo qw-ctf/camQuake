@@ -27,7 +27,6 @@ void Interpolate_Bspline(struct camquake_path_point *p0, struct camquake_path_po
 	return;
 }
 
-
 void Interpolate_Bezier(struct camquake_path_point *p0, struct camquake_path_point *p1, struct camquake_path_point *p2, float delta, struct camquake_path_point *out) {
 	float t1, t2, t3;
 	t1 = pow(1 - delta, 2) * p0->x;
@@ -72,6 +71,7 @@ void Interpolate_Catmull(struct camquake_path_point *p0, struct camquake_path_po
 void CQS_Interpolate_Path(struct camquake_path_point_array *path, float t, struct camquake_path_point *out) {
 	float d, da, split;
 	int i;
+	struct camquake_path_point temp;
 	if (path == NULL) {
 		return;
 	}
@@ -81,22 +81,31 @@ void CQS_Interpolate_Path(struct camquake_path_point_array *path, float t, struc
 		out->z = path->point[0].z;
 	} else if (path->index == 2) {
 		Interpolate_Linear(&path->point[0], &path->point[1], t, out);
-	} else if (path->index == 3) {
-		Interpolate_Bezier(&path->point[0], &path->point[1], &path->point[2], t, out);
-	} else if (path->index > 3) {
+	} else if (path->index > 2) {
 		d = 0;
 		i = 0;
-		split = 1.0f/(path->index - 3);
+		split = 1.0f/(path->index - 1);
 		while (d <= t) {
 			i++;
 			d += split;
 		}
-		i -= 1;
-		if (i < 0) { i=0; }
-		if (i + 3 >= path->index) { i = path->index - 4; }
+		i--;
 		d = i * split;
 		da = (t - i * split) / split;
-		Interpolate_Catmull(&path->point[i], &path->point[i+1], &path->point[i+2], &path->point[i+3], da, 0.5, 0, out);
+		Com_Printf("t: %f, len: %i, i: %i, split: %f, d: %f, da: %f\n", t, path->index, i, split, d, da);
+		if (i == 0) {
+			temp.x = path->point[i].x - path->point[i+1].x;
+			temp.y = path->point[i].y - path->point[i+1].y;
+			temp.z = path->point[i].z - path->point[i+1].z;
+			Interpolate_Catmull(&temp, &path->point[i], &path->point[i+1], &path->point[i+2], da, 0.5, 0, out);
+		} else if (i == path->index-2) {
+			temp.x = path->point[i+1].x + path->point[i].x;
+			temp.y = path->point[i+1].y + path->point[i].y;
+			temp.z = path->point[i+1].z + path->point[i].z;
+			Interpolate_Catmull(&path->point[i-1], &path->point[i], &path->point[i+1], &temp, da, 0.5, 0, out);
+		} else {
+			Interpolate_Catmull(&path->point[i-1], &path->point[i], &path->point[i+1], &path->point[i+2], da, 0.5, 0, out);
+		}
 	}
 }
 
