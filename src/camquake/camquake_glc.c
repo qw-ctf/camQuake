@@ -51,17 +51,30 @@ void Camquake_Render_Setup_Projected_Points(struct camquake_path *path) {
 void Camquake_Render_Update_Path(struct camquake_path *path) {
 	int i;
 	float t;
+	float dt;
 	struct camquake_path_point *p;
 
 	if (path->interpolated_array) {
 		free(path->interpolated_array);
 	}
+
+	if (path->path == NULL) {
+		return;
+	}
+
+	if (path->path->index <= 2) {
+		return;
+	}
+
 	path->interpolated_array = calloc(INTERPOLATION_COUNT, sizeof(*path->interpolated_array));
 	if (path->interpolated_array == NULL) {
 		return;
 	}
-	for (i=0, t=0; i<INTERPOLATION_COUNT; i++, t+=0.01) {
+	dt = path->path->point[path->path->index-1].time - path->path->point[0].time;
+
+	for (i=0; i<INTERPOLATION_COUNT; i++) {
 		p = &path->interpolated_array[i];
+		t = ( dt / INTERPOLATION_COUNT) * i;
 		CQS_Interpolate_Path(path->path, t, p);
 	}
 }
@@ -140,11 +153,13 @@ void Camquake_Render_Path(struct camquake_path *path, struct color4f color_curve
 	} else {
 		Camquake_Custom_Color(&color_curve);
 	}
-	GLC_Begin(GL_LINE_STRIP);
-	for (i=0; i<INTERPOLATION_COUNT; i++) {
-		GLC_Vertex3fv((GLfloat *)&(path->interpolated_array)[i]);
+	if (path->interpolated_array != NULL) {
+		GLC_Begin(GL_LINE_STRIP);
+		for (i=0; i<INTERPOLATION_COUNT; i++) {
+			GLC_Vertex3fv((GLfloat *)&(path->interpolated_array)[i]);
+		}
+		GLC_End();
 	}
-	GLC_End();
 
 	Camquake_Custom_Color(&color_points);
 	glPointSize(20);
