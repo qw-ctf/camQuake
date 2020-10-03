@@ -2,6 +2,7 @@
 
 struct camquake_path_point {
 	float x, y, z;
+	float time;
 };
 
 struct camquake_path_point_array {
@@ -10,7 +11,12 @@ struct camquake_path_point_array {
   struct camquake_path_point point[1];
 };
 
+typedef enum {
+  CQP_INTERPOLATE_EQUAL = 1 << 0,
+} cqp_flags;
+
 struct camquake_path {
+	int flags;
 	float time_start, time_stop;
 	struct camquake_path_point_array *path;
 	struct camquake_path_point *interpolated_array;
