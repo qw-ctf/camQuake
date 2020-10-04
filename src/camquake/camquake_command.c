@@ -29,7 +29,7 @@ void Camquake_Write_Config(struct camquake_setup *setup, char *name) {
 	    }
 	    for (trigger=setup->triggers; trigger != NULL; trigger=trigger->next) {
 
-		    fprintf(f, "camquake setup add_trigger \"%s\" \"%s\" %f \"%s\"\n", name, p->x, p->y, p->z, p->time);
+		    fprintf(f, "camquake setup add_trigger \"%s\" \"%s\" %f \"%s\"\n", name, Camquake_Event_Name(trigger->type), trigger->time, trigger->command);
 	    }
 	    fclose(f);
 	    Com_Printf("setup \'%s\" saved as \"%s\" in \"%s\"", setup->name, name, filepath);
