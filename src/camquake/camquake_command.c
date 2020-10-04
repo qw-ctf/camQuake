@@ -15,13 +15,17 @@ void Camquake_Write_Config(struct camquake_setup *setup, char *name) {
     if ((f = fopen(filepath, "w")) != NULL) {
 	    fprintf(f, "camquake setup add \"%s\"\n", name);
 
-	    for (i=0; i<setup->camera_path.path->index; i++) {
-		    p = &setup->camera_path.path->point[i];
-		    fprintf(f, "camquake setup add_camera_point \"%s\" %f %f %f %f\n", name, p->x, p->y, p->z, p->time);
+	    if (setup->camera_path.path) {
+		for (i=0; i<setup->camera_path.path->index; i++) {
+			p = &setup->camera_path.path->point[i];
+			fprintf(f, "camquake setup add_camera_point \"%s\" %f %f %f %f\n", name, p->x, p->y, p->z, p->time);
+		}
 	    }
-	    for (i=0; i<setup->view_path.path->index; i++) {
+	    if (setup->view_path.path) {
+		for (i=0; i<setup->view_path.path->index; i++) {
 		    p = &setup->view_path.path->point[i];
 		    fprintf(f, "camquake setup add_view_point \"%s\" %f %f %f %f\n", name, p->x, p->y, p->z, p->time);
+		}
 	    }
 	    for (trigger=setup->triggers; trigger != NULL; trigger=trigger->next) {
 
