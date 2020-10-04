@@ -19,6 +19,26 @@ struct camquake_path_point *CQP_Point_New(struct camquake_path_point_array **pat
 	return &((*path_point_array)->point[(*path_point_array)->index++]);
 }
 
+void CQP_Insert_Point(struct camquake_path_point_array **path_point_array, struct camquake_path_point *p) {
+	struct camquake_path_point *np;
+	int i;
+	if (*path_point_array == NULL) {
+		np = CQP_Point_New(path_point_array);
+	} else {
+		for (i=0; i<(*path_point_array)->index; i++) {
+			if ((*path_point_array)->point[i].time > p->time) {
+				np = CQP_Point_New_Index(path_point_array, i);
+				break;
+			}
+		}
+		if (i >= (*path_point_array)->index) {
+			np = CQP_Point_New(path_point_array);
+		}
+	}
+	memcpy(np, p, sizeof*np);
+}
+
+
 
 struct camquake_path_point *CQP_Point_New_Index(struct camquake_path_point_array **path_point_array, unsigned int index)
 {

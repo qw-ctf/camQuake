@@ -139,6 +139,7 @@ struct camquake_interpolation {
 struct camquake_path_point *CQP_Point_New(struct camquake_path_point_array **path_point_array);
 int CQP_Point_Remove_Index(struct camquake_path_point_array **path_point_array, unsigned int position);
 struct camquake_path_point *CQP_Point_New_Index(struct camquake_path_point_array **path_point_array, unsigned int index);
+void CQP_Insert_Point(struct camquake_path_point_array **path_point_array, struct camquake_path_point *p);
 void CQP_Print(struct camquake_path_point_array *path_point_array);
 void CQP_Free(struct camquake_path *path);
 struct camquake_setup *CQS_New(struct camquake_setup **first, char *name);

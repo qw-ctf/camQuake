@@ -28,7 +28,7 @@ void Camquake_Change_Select_Mode(int direction) {
 void Camquake_Insert_Segment_Point(void) {
 	float t;
 	int i;
-	struct camquake_path_point p, *np;
+	struct camquake_path_point p;
 	struct camquake_path_point_array *path;
 	p.x = 0;
 	p.y = 0;
@@ -44,13 +44,7 @@ void Camquake_Insert_Segment_Point(void) {
 	path = camquake->selected_path->path;
 	t -= path->point[0].time;
 	CQS_Interpolate_Path(camquake->selected_path->path, t, &p);
-	for (i=0; i<path->index;i++) {
-		if (path->point[i].time > p.time) {
-			break;
-		}
-	}
-	np = CQP_Point_New_Index(&camquake->selected_path->path, i);
-	memcpy(np, &p, sizeof*np);
+	CQP_Insert_Point(&camquake->selected_path->path, &p);
 	camquake->selected_path = NULL;
 	camquake->selected_point = NULL;
 	camquake->selected_segment.valid = 0;
