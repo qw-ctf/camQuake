@@ -142,7 +142,7 @@ void Camquake_Edit(void) {
 
 void Camquake_Setup(void) {
 	struct camquake_setup *setup;
-	struct camquake_path_point *point;
+	struct camquake_path_point point;
 	int i;
 
 	if (strcmp(Cmd_Argv(2), "add") == 0) {
@@ -202,26 +202,22 @@ void Camquake_Setup(void) {
 			return;
 		}
 		if (strcmp(Cmd_Argv(4), "current") == 0) {
-			point = CQP_Point_New(&(setup->camera_path.path));
-			if (point == NULL) {
-				Com_Printf("Could not add point.\n");
-				return;
-			}
-			point->x = r_refdef.vieworg[0];
-			point->y = r_refdef.vieworg[1];
-			point->z = r_refdef.vieworg[2];
+			point.x = r_refdef.vieworg[0];
+			point.y = r_refdef.vieworg[1];
+			point.z = r_refdef.vieworg[2];
 
 			if (strcmp(Cmd_Argv(5), "now") == 0) {
-			    point->time = cls.demotime;
+			    point.time = cls.demotime;
 			} else {
-			    point->time = atof(Cmd_Argv(5));
+			    point.time = atof(Cmd_Argv(5));
 			}
 			if (setup->time_start == 0) {
-			    setup->time_start= point->time;
+			    setup->time_start= point.time;
 			}
-			if (setup->time_stop <= point->time) {
-			    setup->time_stop = point->time;
+			if (setup->time_stop <= point.time) {
+			    setup->time_stop = point.time;
 			}
+			CQP_Insert_Point(&setup->camera_path.path, &point);
 			setup->changed = 1;
 			return;
 		} else {
@@ -229,21 +225,17 @@ void Camquake_Setup(void) {
 				Camquake_Help_Setup();
 				return;
 			}
-			point = CQP_Point_New(&(setup->camera_path.path));
-			if (point == NULL) {
-				Com_Printf("Could not add point.\n");
-				return;
-			}
-			point->x = atof(Cmd_Argv(4));
-			point->y = atof(Cmd_Argv(5));
-			point->z = atof(Cmd_Argv(6));
-			point->time = atof(Cmd_Argv(7));
+			point.x = atof(Cmd_Argv(4));
+			point.y = atof(Cmd_Argv(5));
+			point.z = atof(Cmd_Argv(6));
+			point.time = atof(Cmd_Argv(7));
 			if (setup->time_start == 0) {
-			    setup->time_start= point->time;
+			    setup->time_start= point.time;
 			}
-			if (setup->time_stop <= point->time) {
-			    setup->time_stop = point->time;
+			if (setup->time_stop <= point.time) {
+			    setup->time_stop = point.time;
 			}
+			CQP_Insert_Point(&setup->camera_path.path, &point);
 			setup->changed = 1;
 			return;
 		}
@@ -258,29 +250,24 @@ void Camquake_Setup(void) {
 			return;
 		}
 		if (strcmp(Cmd_Argv(4), "current") == 0) {
-			point = CQP_Point_New(&(setup->view_path.path));
-			if (point == NULL) {
-				Com_Printf("Could not add point.\n");
-				return;
-			}
-
 			vec3_t forward, up, right;
 			AngleVectors(r_refdef.viewangles, forward, right, up);
-			point->x = forward[0] * 150 + r_refdef.vieworg[0];
-			point->y = forward[1] * 150 + r_refdef.vieworg[1];
-			point->z = forward[2] * 150 + r_refdef.vieworg[2];
+			point.x = forward[0] * 150 + r_refdef.vieworg[0];
+			point.y = forward[1] * 150 + r_refdef.vieworg[1];
+			point.z = forward[2] * 150 + r_refdef.vieworg[2];
 
 			if (strcmp(Cmd_Argv(5), "now") == 0) {
-			    point->time = cls.demotime;
+			    point.time = cls.demotime;
 			} else {
-			    point->time = atof(Cmd_Argv(5));
+			    point.time = atof(Cmd_Argv(5));
 			}
 			if (setup->time_start == 0) {
-			    setup->time_start= point->time;
+			    setup->time_start= point.time;
 			}
-			if (setup->time_stop <= point->time) {
-			    setup->time_stop = point->time;
+			if (setup->time_stop <= point.time) {
+			    setup->time_stop = point.time;
 			}
+			CQP_Insert_Point(&setup->view_path.path, &point);
 			setup->changed = 1;
 			return;
 		} else {
@@ -288,21 +275,17 @@ void Camquake_Setup(void) {
 				Camquake_Help_Setup();
 				return;
 			}
-			point = CQP_Point_New(&(setup->view_path.path));
-			if (point == NULL) {
-				Com_Printf("Could not add point.\n");
-				return;
-			}
-			point->x = atof(Cmd_Argv(4));
-			point->y = atof(Cmd_Argv(5));
-			point->z = atof(Cmd_Argv(6));
-			point->time = atof(Cmd_Argv(7));
+			point.x = atof(Cmd_Argv(4));
+			point.y = atof(Cmd_Argv(5));
+			point.z = atof(Cmd_Argv(6));
+			point.time = atof(Cmd_Argv(7));
 			if (setup->time_start == 0) {
-			    setup->time_start= point->time;
+			    setup->time_start= point.time;
 			}
-			if (setup->time_stop <= point->time) {
-			    setup->time_stop = point->time;
+			if (setup->time_stop <= point.time) {
+			    setup->time_stop = point.time;
 			}
+			CQP_Insert_Point(&setup->view_path.path, &point);
 			setup->changed = 1;
 			return;
 		}
