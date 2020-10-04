@@ -38,9 +38,9 @@ void Camquake_Write_Config(struct camquake_setup *setup, char *name) {
 		    fprintf(f, "camquake setup add_interpolation \"%s\" \"%s\" %f %f \"%s\" %f %f\n", name, Camquake_Event_Name(inter->type), inter->time_start, inter->time_stop, inter->command, inter->value_start, inter->value_stop);
 	    }
 	    fclose(f);
-	    Com_Printf("setup \'%s\" saved as \"%s\" in \"%s\"", setup->name, name, filepath);
+	    Com_Printf("setup \'%s\" saved as \"%s\" in \"%s\"\n", setup->name, name, filepath);
     } else {
-	    Com_Printf("could not save to \"%s\".", filepath);
+	    Com_Printf("could not save to \"%s\"\n", filepath);
     }
 }
 
