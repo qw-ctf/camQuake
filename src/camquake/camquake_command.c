@@ -8,6 +8,7 @@ void Camquake_Write_Config(struct camquake_setup *setup, char *name) {
     char filepath[MAX_PATH];
     FILE *f;
     struct camquake_path_point *p;
+    struct camquake_trigger *trigger;
     int i;
 
     snprintf(filepath, sizeof(filepath), "%s/camquake/%s.cfg", com_basedir, name);
@@ -21,6 +22,8 @@ void Camquake_Write_Config(struct camquake_setup *setup, char *name) {
 	    for (i=0; i<setup->view_path.path->index; i++) {
 		    p = &setup->view_path.path->point[i];
 		    fprintf(f, "camquake setup add_view_point \"%s\" %f %f %f %f\n", name, p->x, p->y, p->z, p->time);
+	    }
+	    for (trigger=setup->triggers; trigger != NULL; trigger=trigger->next) {
 	    }
 	    fclose(f);
 	    Com_Printf("setup \'%s\" saved as \"%s\" in \"%s\"", setup->name, name, filepath);
@@ -152,6 +155,12 @@ void Camquake_Setup(void) {
 			setup = setup->next;
 		}
 
+	} else if (strcmp(Cmd_Argv(2), "add_interpolation") == 0) {
+	    Camquake_Add_Interpolation();
+	    return;
+	} else if (strcmp(Cmd_Argv(2), "add_trigger") == 0) {
+	    Camquake_Add_Trigger();
+	    return;
 	} else if (strcmp(Cmd_Argv(2), "add_camera_point") == 0) {
 		if (Cmd_Argc() < 5 || Cmd_Argc() > 8) {
 			Camquake_Help_Setup();
@@ -271,7 +280,6 @@ void Camquake_Setup(void) {
 	}
 }
 
-
 void Camquake_Play(void) {
 	struct camquake_setup *setup;
 	if (Cmd_Argc() < 3) {
@@ -352,3 +360,4 @@ void Camquake_Cmd(void) {
 	}
 	Camquake_Available_Commands();
 }
+
