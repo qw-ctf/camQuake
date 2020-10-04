@@ -48,7 +48,11 @@ void Camquake_Add_Trigger(void) {
 	    free(trigger);
 	    return;
     }
-    trigger->time = atof(Cmd_Argv(5));
+    if (strcmp(Cmd_Argv(5), "now") == 0) {
+	    trigger->time = cls.demo_rewindtime;
+    } else {
+	    trigger->time = atof(Cmd_Argv(5));
+    }
     trigger->command = strdup(Cmd_Argv(6));
     if (setup->triggers == NULL) {
 	    setup->triggers = trigger;
