@@ -32,6 +32,7 @@ struct camquake_setup {
 	int changed;
 	unsigned int first_frame;
 	struct camquake_trigger *triggers;
+	struct camquake_interpolation *interpolations;
 };
 
 struct color4f {
@@ -107,6 +108,16 @@ struct camquake_trigger {
   char *command;
   unsigned int frame;
 };
+
+struct camquake_interpolation {
+  struct camquake_interpolation *next;
+  cqe_type type;
+  float time_start, time_stop;
+  float value_start, value_stop;
+  char *command;
+  unsigned int frame;
+};
+
 
 
 
