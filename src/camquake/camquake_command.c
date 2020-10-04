@@ -307,12 +307,11 @@ void Camquake_Setup(void) {
 
 void Camquake_Playback(void) {
 	struct camquake_setup *setup;
-	Com_Printf("playback\n");
 	if (Cmd_Argc() < 3) {
-	    Com_Printf("play|stop.\n");
+	    Com_Printf("start|stop.\n");
 	    return;
 	}
-	if (strcmp(Cmd_Argv(2), "play") == 0) {
+	if (strcmp(Cmd_Argv(2), "start") == 0) {
 	    if (Cmd_Argc() < 4) {
 		    Com_Printf("need a camera setup to play.\n");
 		    return;
@@ -329,13 +328,15 @@ void Camquake_Playback(void) {
 	    } else {
 		camquake->current_time = 0;
 	    }
-	}
-	if (strcmp(Cmd_Argv(2), "stop") == 0) {
+	} else if (strcmp(Cmd_Argv(2), "stop") == 0) {
 	    camquake->current_time = 0;
-	    camquake->active_setup->first_frame = 0;
-	    camquake->active_setup = NULL;
+	    if (camquake->active_setup) {
+		camquake->active_setup->first_frame = 0;
+		camquake->active_setup = NULL;
+	    }
+	} else {
+	    Com_Printf("start|stop.\n");
 	}
-	Com_Printf("play|stop.\n");
 	return;
 }
 
