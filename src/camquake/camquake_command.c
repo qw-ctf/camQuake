@@ -82,6 +82,7 @@ void Camquake_Help_Setup(void) {
 void Camquake_Print_Setup(struct camquake_setup *setup) {
 	int i;
 	struct camquake_trigger *trigger;
+	struct camquake_interpolation *inter;
 	if (setup == NULL) {
 		return;
 	}
@@ -110,13 +111,27 @@ void Camquake_Print_Setup(struct camquake_setup *setup) {
 	trigger = setup->triggers;
 	if (trigger) {
 	    i = 0;
+	    Com_Printf("Triggers: \n");
 	    while(trigger) {
 		i++;
-		Com_Printf("%i: %s %f \"%s\"", i, Camquake_Event_Name(trigger->type),  trigger->time, trigger->command);
+		Com_Printf("%i: %s %f \"%s\"\n", i, Camquake_Event_Name(trigger->type),  trigger->time, trigger->command);
 		trigger = trigger->next;
 	    }
 	} else {
 	    Com_Printf("No triggers.\n");
+	}
+
+	inter = setup->interpolations;
+	if (inter) {
+	    i = 0;
+	    Com_Printf("Interpolations: \n");
+	    while(inter) {
+		i++;
+		Com_Printf("%i: %s %f %f \"%s\" %f %f\n", i, Camquake_Event_Name(inter->type),  inter->time_start, inter->time_stop, inter->command, inter->value_start, inter->value_stop);
+		inter = inter->next;
+	    }
+	} else {
+	    Com_Printf("No interpolations.\n");
 	}
 }
 
