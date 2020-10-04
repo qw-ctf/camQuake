@@ -81,6 +81,7 @@ void Camquake_Help_Setup(void) {
 
 void Camquake_Print_Setup(struct camquake_setup *setup) {
 	int i;
+	struct camquake_trigger *trigger;
 	if (setup == NULL) {
 		return;
 	}
@@ -104,6 +105,18 @@ void Camquake_Print_Setup(struct camquake_setup *setup) {
 	    }
 	} else {
 	    Com_Printf("view: no points.\n");
+	}
+
+	trigger = setup->triggers;
+	if (trigger) {
+	    i = 0;
+	    while(trigger) {
+		i++;
+		Com_Printf("%i: %s %f \"%s\"", i, Camquake_Event_Name(trigger->type),  trigger->time, trigger->command);
+		trigger = trigger->next;
+	    }
+	} else {
+	    Com_Printf("No triggers.\n");
 	}
 }
 
