@@ -74,6 +74,7 @@ struct camquake_edit_mode {
 
 struct camquake {
 	cvar_t enabled;
+	cvar_t auto_playback;
 	cvar_t overwrite_on_load;
 	cvar_t render;
 	struct camquake_color_variables color_variables;
