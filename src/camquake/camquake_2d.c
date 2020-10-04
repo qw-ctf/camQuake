@@ -13,7 +13,7 @@ void draw_on_screen(int *line, char *fmt, ...) {
 	va_start (argptr, fmt);
 	vsnprintf (msg, sizeof(msg), fmt, argptr);
 	va_end (argptr);
-	Draw_String(0, *line * line_pixel, msg);
+	Draw_ColoredString(0, *line * line_pixel, msg, 0, false);
 	*line += 1;
 }
 
@@ -27,8 +27,12 @@ void Camquake_2D_Draw(void)
 		return;
 	}
 
-	draw_on_screen(lptr, "camquake edit mode (press f1 %s help/escape to exit)", camquake->edit.help ? "to close" : "for");
-	draw_on_screen(lptr, "movement: direction(%s) mode(%s) modifier(%f)", movement_types[camquake->edit.movement_axis], camquake->edit.move_path ? "path" : "point", camquake->edit.movement_multiplier);
+	draw_on_screen(lptr, "camquake edit (%s) mode (press f1 %s help/escape to exit)", (camquake->edit.edit_mode == 0) ? "&c0f0position&cfff" : "&cf00time&cfff", camquake->edit.help ? "to close" : "for");
+	if (camquake->edit.edit_mode == 0) {
+		draw_on_screen(lptr, "movement: direction(%s) mode(%s) modifier(%f)", movement_types[camquake->edit.movement_axis], camquake->edit.move_path ? "path" : "point", camquake->edit.movement_multiplier);
+	} else {
+		draw_on_screen(lptr, "time: modifier(%f)",  camquake->edit.movement_multiplier);
+	}
 
 	if (camquake->edit.help == 1) {
 
@@ -39,6 +43,7 @@ void Camquake_2D_Draw(void)
 		draw_on_screen(lptr, "press 1|2 to cycle through the movement modes - %s", movement_types[camquake->edit.movement_axis]);
 		draw_on_screen(lptr, "press 3 to cycle between moving a single point and the whole path");
 		draw_on_screen(lptr, "press 4|5 to divide/multiply movement multiplier by 10 - %f", camquake->edit.movement_multiplier);
+		draw_on_screen(lptr, "press tab to switch between &c0f0position&cfff and &cf00time&cfff editing");
 		return;
 	}
 

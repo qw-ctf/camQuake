@@ -89,38 +89,40 @@ void Camquake_Render_Movement_Directions(struct camquake_path_point *p) {
 	if (p == NULL) {
 		return;
 	}
-	switch (camquake->edit.movement_axis) {
-		case CQEM_MA_XY:
-			stop_mouse_x.x += line_length;
-			stop_mouse_y.y += line_length;
-			break;
-		case CQEM_MA_XZ:
-			stop_mouse_x.x += line_length;
-			stop_mouse_y.z += line_length;
-			break;
-		case CQEM_MA_YZ:
-			stop_mouse_x.y += line_length;
-			stop_mouse_y.z += line_length;
-			break;
-		case CQEM_MA_X:
-			stop_mouse_x.x += line_length;
-			stop_mouse_y.x += line_length;
-			break;
-		case CQEM_MA_Y:
-			stop_mouse_x.y += line_length;
-			stop_mouse_y.y += line_length;
-			break;
-		case CQEM_MA_Z:
-			stop_mouse_x.z += line_length;
-			stop_mouse_y.z += line_length;
-			break;
-		case CQEM_MA_VIEW:
-			AngleVectors(r_refdef.viewangles, forward, right, up);
-			VectorScale(right, line_length, right);
-			VectorAdd(&stop_mouse_x.x, right, &stop_mouse_x.x);
-			VectorScale(up, line_length, up);
-			VectorAdd(&stop_mouse_y.x, up, &stop_mouse_y.x);
-			break;
+	if (camquake->edit.edit_mode == 0) {
+		switch (camquake->edit.movement_axis) {
+			case CQEM_MA_XY:
+				stop_mouse_x.x += line_length;
+				stop_mouse_y.y += line_length;
+				break;
+			case CQEM_MA_XZ:
+				stop_mouse_x.x += line_length;
+				stop_mouse_y.z += line_length;
+				break;
+			case CQEM_MA_YZ:
+				stop_mouse_x.y += line_length;
+				stop_mouse_y.z += line_length;
+				break;
+			case CQEM_MA_X:
+				stop_mouse_x.x += line_length;
+				stop_mouse_y.x += line_length;
+				break;
+			case CQEM_MA_Y:
+				stop_mouse_x.y += line_length;
+				stop_mouse_y.y += line_length;
+				break;
+			case CQEM_MA_Z:
+				stop_mouse_x.z += line_length;
+				stop_mouse_y.z += line_length;
+				break;
+			case CQEM_MA_VIEW:
+				AngleVectors(r_refdef.viewangles, forward, right, up);
+				VectorScale(right, line_length, right);
+				VectorAdd(&stop_mouse_x.x, right, &stop_mouse_x.x);
+				VectorScale(up, line_length, up);
+				VectorAdd(&stop_mouse_y.x, up, &stop_mouse_y.x);
+				break;
+		}
 	}
 	glDisable(GL_TEXTURE_2D);
 	glLineWidth(4);
