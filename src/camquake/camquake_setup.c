@@ -80,7 +80,7 @@ void CQS_Interpolate_Path(struct camquake_path_point_array *path, float t, struc
 		out->y = path->point[0].y;
 		out->z = path->point[0].z;
 	} else if (path->index == 2) {
-		Interpolate_Linear(&path->point[0], &path->point[1], t/(path->point[1].time - path->point[2].time), out);
+		Interpolate_Linear(&path->point[0], &path->point[1], t/(path->point[1].time - path->point[0].time), out);
 	} else if (path->index > 2) {
 		d = 0;
 		i = 0;
