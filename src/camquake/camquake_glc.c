@@ -62,7 +62,7 @@ void Camquake_Render_Update_Path(struct camquake_path *path) {
 		return;
 	}
 
-	if (path->path->index <= 2) {
+	if (path->path->index < 2) {
 		return;
 	}
 

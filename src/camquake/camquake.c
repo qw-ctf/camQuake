@@ -182,13 +182,18 @@ void Camquake_Frame(void)
 	if (camquake->enabled.value == 0) {
 		return;
 	}
+	camquake->frame++;
 	camquake->current_time += cls.frametime;
 	// used by "camquake play"
 	if (camquake->active_setup) {
 		if (camquake->current_time <= camquake->active_setup->time_stop - camquake->active_setup->time_start) {
+			if (camquake->active_setup->first_frame == 0) {
+				camquake->active_setup->first_frame = camquake->frame;
+			}
 			t = camquake->current_time;
 			CQS_Interpolate(camquake->active_setup, t, (struct camquake_path_point *)&r_refdef.vieworg, (struct camquake_path_point *)&r_refdef.viewangles);
 		} else {
+			camquake->active_setup->first_frame = 0;
 			camquake->active_setup = NULL;
 		}
 	} else {
@@ -196,9 +201,14 @@ void Camquake_Frame(void)
 			current = camquake->setup;
 			while (current != NULL) {
 				if (cls.demotime >= current->time_start && cls.demotime <= current->time_stop) {
+					if (current->first_frame == 0) {
+						current->first_frame = camquake->frame;
+					}
 
 					t = (cls.demotime - current->time_start) / (current->time_stop - current->time_start);
 					CQS_Interpolate(current, t, (struct camquake_path_point *)&r_refdef.vieworg, (struct camquake_path_point *)&r_refdef.viewangles);
+				} else {
+					current->first_frame = 0;
 				}
 				current = current->next;
 			}

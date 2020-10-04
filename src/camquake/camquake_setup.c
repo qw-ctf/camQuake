@@ -122,6 +122,7 @@ void CQS_Interpolate(struct camquake_setup *setup, float t, struct camquake_path
 	temp.z = view->z - cam->z;
 	Camquake_Vector_To_Angles(&temp, view);
 	view->x *= -1.0f;
+	Camquake_Triggers(setup, t);
 }
 
 struct camquake_setup *CQS_New(struct camquake_setup **first, char *name) {
