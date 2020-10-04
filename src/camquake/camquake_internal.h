@@ -63,6 +63,7 @@ typedef enum {
 } cqem_movement_axis;
 
 struct camquake_edit_mode {
+  int edit_mode;
   int movement_axis;
   float movement_multiplier;
   int help;
