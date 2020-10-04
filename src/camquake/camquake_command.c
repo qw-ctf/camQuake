@@ -9,6 +9,7 @@ void Camquake_Write_Config(struct camquake_setup *setup, char *name) {
     FILE *f;
     struct camquake_path_point *p;
     struct camquake_trigger *trigger;
+    struct camquake_interpolation *inter;
     int i;
 
     snprintf(filepath, sizeof(filepath), "%s/camquake/%s.cfg", com_basedir, name);
@@ -30,6 +31,11 @@ void Camquake_Write_Config(struct camquake_setup *setup, char *name) {
 	    for (trigger=setup->triggers; trigger != NULL; trigger=trigger->next) {
 
 		    fprintf(f, "camquake setup add_trigger \"%s\" \"%s\" %f \"%s\"\n", name, Camquake_Event_Name(trigger->type), trigger->time, trigger->command);
+	    }
+
+	    for (inter=setup->interpolations; inter!= NULL; inter=inter->next) {
+
+		    fprintf(f, "camquake setup add_interpolation \"%s\" \"%s\" %f %f \"%s\" %f %f\n", name, Camquake_Event_Name(inter->type), inter->time_start, inter->time_stop, inter->command, inter->value_start, inter->value_stop);
 	    }
 	    fclose(f);
 	    Com_Printf("setup \'%s\" saved as \"%s\" in \"%s\"", setup->name, name, filepath);
