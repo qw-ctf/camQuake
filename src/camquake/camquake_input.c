@@ -64,6 +64,20 @@ void Camquake_Find_Highlight (struct camquake_path_point *cursor) {
 	}
 }
 
+void Camquake_Change_Time(float x, float y, struct camquake_path_point *point, struct camquake_path *path) {
+	int i;
+	if (x == 0 && y == 0 )
+		return;
+
+	if (camquake->edit.move_path == 1) {
+		for (i=0<i;path->path->index; i++) {
+			path->path->point[i].time += x;
+		}
+	} else {
+		point->time += x;
+	}
+}
+
 void Camquake_Move_Path(float x, float y, struct camquake_path_point *point, struct camquake_path *path) {
 	struct camquake_path_point offset, *cp;
 	int i;
@@ -140,7 +154,11 @@ qbool Camquake_MouseEvent(mouse_state_t *ms)
 			x = x * cls.trueframetime * camquake->edit.movement_multiplier * 100;
 			y = ms->y - camquake->edit.cursor_old.y;
 			y = y * cls.trueframetime * camquake->edit.movement_multiplier * 100;
-			Camquake_Move_Path(x, y, camquake->selected_point, camquake->selected_path); 
+			if (camquake->edit.edit_mode == 0) {
+				Camquake_Move_Path(x, y, camquake->selected_point, camquake->selected_path); 
+			} else {
+				Camquake_Change_Time(x, y, camquake->selected_point, camquake->selected_path); 
+			}
 			camquake->setup_projection = 1;
 			camquake->selected_setup->changed = 1;
 			camquake->edit.cursor_old.x = ms->x;
@@ -182,6 +200,9 @@ qbool Camquake_KeyEvent(int key, int unichar, qbool down)
 			return true;
 		case K_F1:
 			camquake->edit.help = !camquake->edit.help;
+			return true;
+		case K_TAB:
+			camquake->edit.edit_mode = !camquake->edit.edit_mode;
 			return true;
 	}
 	return true;
