@@ -24,6 +24,8 @@ void Camquake_Write_Config(struct camquake_setup *setup, char *name) {
 		    fprintf(f, "camquake setup add_view_point \"%s\" %f %f %f %f\n", name, p->x, p->y, p->z, p->time);
 	    }
 	    for (trigger=setup->triggers; trigger != NULL; trigger=trigger->next) {
+
+		    fprintf(f, "camquake setup add_trigger \"%s\" \"%s\" %f \"%s\"\n", name, p->x, p->y, p->z, p->time);
 	    }
 	    fclose(f);
 	    Com_Printf("setup \'%s\" saved as \"%s\" in \"%s\"", setup->name, name, filepath);
@@ -180,7 +182,12 @@ void Camquake_Setup(void) {
 			point->x = r_refdef.vieworg[0];
 			point->y = r_refdef.vieworg[1];
 			point->z = r_refdef.vieworg[2];
-			point->time = cls.demotime;
+
+			if (strcmp(Cmd_Argv(5), "now") == 0) {
+			    point->time = cls.demotime;
+			} else {
+			    point->time = atof(Cmd_Argv(5));
+			}
 			if (setup->time_start == 0) {
 			    setup->time_start= point->time;
 			}
@@ -234,7 +241,12 @@ void Camquake_Setup(void) {
 			point->x = forward[0] * 150 + r_refdef.vieworg[0];
 			point->y = forward[1] * 150 + r_refdef.vieworg[1];
 			point->z = forward[2] * 150 + r_refdef.vieworg[2];
-			point->time = cls.demotime;
+
+			if (strcmp(Cmd_Argv(5), "now") == 0) {
+			    point->time = cls.demotime;
+			} else {
+			    point->time = atof(Cmd_Argv(5));
+			}
 			if (setup->time_start == 0) {
 			    setup->time_start= point->time;
 			}
