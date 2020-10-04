@@ -30,6 +30,8 @@ struct camquake_setup {
 	float time_start, time_stop;
 	struct camquake_setup *next;
 	int changed;
+	unsigned int first_frame;
+	struct camquake_trigger *triggers;
 };
 
 struct color4f {
@@ -89,6 +91,21 @@ struct camquake {
 	int have_input;
 	struct camquake_edit_mode edit;
 	int setup_projection;
+	unsigned int frame;
+};
+
+typedef enum {
+  CQE_CONSOLE = 0,
+  CQE_CAMERA_ROLL = 1,
+  CQE_ERROR = 999,
+} cqe_type ;
+
+struct camquake_trigger {
+  struct camquake_trigger *next;
+  cqe_type type;
+  float time;
+  char *command;
+  unsigned int frame;
 };
 
 
@@ -109,3 +126,4 @@ void Camquake_Vector_To_Angles(struct camquake_path_point *vec, struct camquake_
 void Camquake_InputRelease(void);
 void Camquake_InputGrab(void);
 void Camquake_Render_Setup_Projected_Points(struct camquake_path *path);
+char *Camquake_Event_Name(cqe_type event);

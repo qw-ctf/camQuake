@@ -579,6 +579,7 @@ ifdef CAMQUAKE
     OBJS_c += camquake/camquake_glc.o
     OBJS_c += camquake/camquake_input.o
     OBJS_c += camquake/camquake_2d.o
+    OBJS_c += camquake/camquake_event.o
     CFLAGS += -DCAMQUAKE
 endif
 
