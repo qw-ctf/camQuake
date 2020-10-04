@@ -184,7 +184,7 @@ void Camquake_Frame(void)
 	}
 	camquake->frame++;
 	camquake->current_time += cls.frametime;
-	// used by "camquake play"
+	// used by "camquake playback"
 	if (camquake->active_setup) {
 		if (camquake->current_time <= camquake->active_setup->time_stop - camquake->active_setup->time_start) {
 			if (camquake->active_setup->first_frame == 0) {
