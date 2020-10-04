@@ -90,7 +90,6 @@ void CQS_Interpolate_Path(struct camquake_path_point_array *path, float t, struc
 		i--;
 		if (i < 0 ) { i = 0 ;}
 		da = (t - (path->point[i].time - path->point[0].time)) / (path->point[i+1].time - path->point[i].time);
-		//Com_Printf("i: %i; da: %f; t: %f\n", i, da, t);
 		if (i == 0) {
 			temp.x = path->point[i].x - path->point[i+1].x;
 			temp.y = path->point[i].y - path->point[i+1].y;

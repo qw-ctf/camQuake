@@ -79,51 +79,56 @@ void Camquake_Render_Update_Path(struct camquake_path *path) {
 	}
 }
 
-void Camquake_Render_Movement_Directions(struct camquake_path_point *p) {
-	struct camquake_path_point stop_mouse_x, stop_mouse_y;
+void Camquake_Render_Setup_Direction_Lines(struct camquake_path_point *p, struct camquake_path_point *p0, struct camquake_path_point *p1) {
 	float line_length = 50;
+	memcpy(p0, p, sizeof(*p));
+	memcpy(p1, p, sizeof(*p));
 	vec3_t forward, up, right;
-
-	memcpy(&stop_mouse_x, p, sizeof(*p));
-	memcpy(&stop_mouse_y, p, sizeof(*p));
-	if (p == NULL) {
-		return;
-	}
 	if (camquake->edit.edit_mode == 0) {
 		switch (camquake->edit.movement_axis) {
 			case CQEM_MA_XY:
-				stop_mouse_x.x += line_length;
-				stop_mouse_y.y += line_length;
+				p0->x += line_length;
+				p1->y += line_length;
 				break;
 			case CQEM_MA_XZ:
-				stop_mouse_x.x += line_length;
-				stop_mouse_y.z += line_length;
+				p0->x += line_length;
+				p1->z += line_length;
 				break;
 			case CQEM_MA_YZ:
-				stop_mouse_x.y += line_length;
-				stop_mouse_y.z += line_length;
+				p0->y += line_length;
+				p1->z += line_length;
 				break;
 			case CQEM_MA_X:
-				stop_mouse_x.x += line_length;
-				stop_mouse_y.x += line_length;
+				p0->x += line_length;
+				p1->x += line_length;
 				break;
 			case CQEM_MA_Y:
-				stop_mouse_x.y += line_length;
-				stop_mouse_y.y += line_length;
+				p0->y += line_length;
+				p1->y += line_length;
 				break;
 			case CQEM_MA_Z:
-				stop_mouse_x.z += line_length;
-				stop_mouse_y.z += line_length;
+				p0->z += line_length;
+				p1->z += line_length;
 				break;
 			case CQEM_MA_VIEW:
 				AngleVectors(r_refdef.viewangles, forward, right, up);
 				VectorScale(right, line_length, right);
-				VectorAdd(&stop_mouse_x.x, right, &stop_mouse_x.x);
+				VectorAdd(*((vec3_t *)&p0->x), right, *((vec3_t *)&p0->x));
 				VectorScale(up, line_length, up);
-				VectorAdd(&stop_mouse_y.x, up, &stop_mouse_y.x);
+				VectorAdd(*((vec3_t *)&p1->x), up, *((vec3_t *)&p1->x));
 				break;
 		}
 	}
+}
+
+void Camquake_Render_Movement_Directions(struct camquake_path_point *p) {
+	struct camquake_path_point stop_mouse_x, stop_mouse_y;
+
+	if (p == NULL) {
+		return;
+	}
+
+	Camquake_Render_Setup_Direction_Lines(p, &stop_mouse_x, &stop_mouse_y);
 	glDisable(GL_TEXTURE_2D);
 	glLineWidth(4);
 	GLC_Begin(GL_LINE_STRIP);
@@ -141,16 +146,18 @@ void Camquake_Render_Movement_Directions(struct camquake_path_point *p) {
 
 void Camquake_Render_Path(struct camquake_path *path, struct color4f color_curve, struct color4f color_points) {
 	int i;
+	int clear_color;
 	if (path == NULL) {
 		return;
 	}
 	if (path->path == NULL) {
 		return;
 	}
+	clear_color = 0;
 
 	glDisable(GL_TEXTURE_2D);
 	glLineWidth(4);
-	if (camquake->selected_path == path && camquake->edit.move_path == 1) {
+	if (camquake->selected_path == path && camquake->edit.select_mode== CQEM_SELECT_MODE_PATH) {
 		Camquake_Custom_Color(&camquake->colors.highlight_path);
 	} else {
 		Camquake_Custom_Color(&color_curve);
@@ -167,11 +174,15 @@ void Camquake_Render_Path(struct camquake_path *path, struct color4f color_curve
 	glPointSize(20);
 	GLC_Begin(GL_POINTS);
 	for (i=0; i<path->path->index; i++) {
-		if (&path->path->point[i] == camquake->selected_point) {
+		if (
+		(&path->path->point[i] == camquake->selected_point && camquake->edit.select_mode == CQEM_SELECT_MODE_POINT) ||
+		((&path->path->point[i] == camquake->selected_segment.p0 || &path->path->point[i] == camquake->selected_segment.p1) && camquake->edit.select_mode == CQEM_SELECT_MODE_SEGMENT)) {
 			Camquake_Custom_Color(&camquake->colors.highlight_point);
+			clear_color = 1;
 		}
 		GLC_Vertex3fv((GLfloat *)&(path->path->point[i]));
-		if (&path->path->point[i] == camquake->selected_point) {
+		if (clear_color) {
+			clear_color = 0;
 			Camquake_Custom_Color(&color_points);
 		}
 	}
@@ -189,8 +200,15 @@ void Camquake_Render_Setup (struct camquake_setup *setup) {
 
 	Camquake_Render_Path(&setup->camera_path, camquake->colors.camera_path, camquake->colors.camera_point);
 	Camquake_Render_Path(&setup->view_path, camquake->colors.view_path, camquake->colors.view_point);
-	if (camquake->selected_point != NULL && camquake->have_input) {
-		Camquake_Render_Movement_Directions(camquake->selected_point);
+	if (camquake->have_input) {
+		if (camquake->selected_point != NULL && (camquake->edit.select_mode == CQEM_SELECT_MODE_POINT || camquake->edit.select_mode == CQEM_SELECT_MODE_PATH)) {
+			Camquake_Render_Movement_Directions(camquake->selected_point);
+		} else if (camquake->edit.select_mode == CQEM_SELECT_MODE_SEGMENT) {
+			if (camquake->selected_segment.valid == 1) {
+				Camquake_Render_Movement_Directions(camquake->selected_segment.p0);
+				Camquake_Render_Movement_Directions(camquake->selected_segment.p1);
+			}
+		}
 	}
 
 }
