@@ -112,7 +112,7 @@ void Camquake_Print_Setup(struct camquake_setup *setup) {
 	    Com_Printf("view: %d points.\n", setup->view_path.path->index);
 	    for (i=0; i<setup->view_path.path->index; i++) {
 		    p = &setup->view_path.path->point[i];
-		    Com_Printf("      %f %f %f\n", p->x, p->y, p->z);
+		    Com_Printf("      %f %f %f - %f\n", p->x, p->y, p->z, p->time);
 	    }
 	} else {
 	    Com_Printf("view: no points.\n");
