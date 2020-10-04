@@ -305,19 +305,38 @@ void Camquake_Setup(void) {
 	}
 }
 
-void Camquake_Play(void) {
+void Camquake_Playback(void) {
 	struct camquake_setup *setup;
+	Com_Printf("playback\n");
 	if (Cmd_Argc() < 3) {
-		Com_Printf("need a camera setup to play.\n");
-		return;
+	    Com_Printf("play|stop.\n");
+	    return;
 	}
-	setup = CQS_Find(&camquake->setup, Cmd_Argv(2));
-	if (setup == NULL) {
+	if (strcmp(Cmd_Argv(2), "play") == 0) {
+	    if (Cmd_Argc() < 4) {
+		    Com_Printf("need a camera setup to play.\n");
+		    return;
+	    }
+	    setup = CQS_Find(&camquake->setup, Cmd_Argv(3));
+	    if (setup == NULL) {
 		Com_Printf("setup \"%s\" does not exist. try camquake setup list\n");
 		return;
+	    }
+	    camquake->active_setup = setup;
+
+	    if (Cmd_Argc() == 5) {
+		camquake->current_time = atof(Cmd_Argv(4));
+	    } else {
+		camquake->current_time = 0;
+	    }
 	}
-	camquake->active_setup = setup;
-	camquake->current_time = 0;
+	if (strcmp(Cmd_Argv(2), "stop") == 0) {
+	    camquake->current_time = 0;
+	    camquake->active_setup->first_frame = 0;
+	    camquake->active_setup = NULL;
+	}
+	Com_Printf("play|stop.\n");
+	return;
 }
 
 
@@ -373,8 +392,8 @@ void Camquake_Cmd(void) {
 	} else if (strcmp(Cmd_Argv(1), "setup") == 0) {
 		Camquake_Setup();
 		return;
-	} else if (strcmp(Cmd_Argv(1), "play") == 0) {
-		Camquake_Play();
+	} else if (strcmp(Cmd_Argv(1), "playback") == 0) {
+		Camquake_Playback();
 		return;
 	} else if (strcmp(Cmd_Argv(1), "select") == 0) {
 		Camquake_Select();
