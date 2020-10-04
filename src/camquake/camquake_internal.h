@@ -65,14 +65,28 @@ typedef enum {
   CQEM_MA_MAX = 6,
 } cqem_movement_axis;
 
+
+typedef enum {
+  CQEM_SELECT_MODE_MIN= 0,
+  CQEM_SELECT_MODE_POINT = 0,
+  CQEM_SELECT_MODE_PATH = 1,
+  CQEM_SELECT_MODE_SEGMENT = 2,
+  CQEM_SELECT_MODE_MAX= 2,
+} cqem_select_mode;
+
 struct camquake_edit_mode {
   int edit_mode;
   int movement_axis;
   float movement_multiplier;
   int help;
-  int move_path;
+  cqem_select_mode select_mode;
   struct camquake_path_point cursor_old;
   struct camquake_path_point cursor_initial;
+};
+
+struct camquake_segment {
+  int valid;
+  struct camquake_path_point *p0, *p1;
 };
 
 struct camquake {
@@ -88,6 +102,7 @@ struct camquake {
 	struct camquake_path_point *selected_point;
 	struct camquake_path_point *selected_point_p;
 	struct camquake_path *selected_path;
+	struct camquake_segment selected_segment;
 	float current_time;
 	int have_input;
 	struct camquake_edit_mode edit;
