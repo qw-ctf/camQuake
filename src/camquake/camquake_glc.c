@@ -155,6 +155,7 @@ void Camquake_Render_Path(struct camquake_path *path, struct color4f color_curve
 	}
 	clear_color = 0;
 
+	glBlendFunc(GL_ZERO, GL_ZERO);
 	glDisable(GL_TEXTURE_2D);
 	glLineWidth(4);
 	if (camquake->selected_path == path && camquake->edit.select_mode== CQEM_SELECT_MODE_PATH) {
@@ -188,6 +189,7 @@ void Camquake_Render_Path(struct camquake_path *path, struct color4f color_curve
 	}
 	GLC_End();
 	glEnable(GL_TEXTURE_2D);
+	glBlendFunc(GL_ONE, GL_ONE);
 }
 
 void Camquake_Render_Setup (struct camquake_setup *setup) {
