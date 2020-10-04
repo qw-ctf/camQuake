@@ -205,7 +205,7 @@ void Camquake_Frame(void)
 						current->first_frame = camquake->frame;
 					}
 
-					t = (cls.demotime - current->time_start) / (current->time_stop - current->time_start);
+					t = (cls.demotime - current->time_start);
 					CQS_Interpolate(current, t, (struct camquake_path_point *)&r_refdef.vieworg, (struct camquake_path_point *)&r_refdef.viewangles);
 				} else {
 					current->first_frame = 0;
