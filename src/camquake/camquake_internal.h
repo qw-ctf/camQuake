@@ -138,3 +138,5 @@ void Camquake_InputRelease(void);
 void Camquake_InputGrab(void);
 void Camquake_Render_Setup_Projected_Points(struct camquake_path *path);
 char *Camquake_Event_Name(cqe_type event);
+void Camquake_Interpolations(struct camquake_setup *setup, float t);
+void Camquake_Triggers(struct camquake_setup *setup, float t);
