@@ -130,6 +130,7 @@ void Camquake_Render_Movement_Directions(struct camquake_path_point *p) {
 	Camquake_Render_Setup_Direction_Lines(p, &stop_mouse_x, &stop_mouse_y);
 	R_ApplyRenderingState( r_state_drawflat_without_lightmaps_glc);
 	//glDisable(GL_TEXTURE_2D);
+	glLineWidth(4);
 	GLC_Begin(GL_LINE_STRIP);
 	Camquake_Custom_Color(&camquake->colors.movement_x);
 	GLC_Vertex3fv((GLfloat *)&p->x);
@@ -140,6 +141,7 @@ void Camquake_Render_Movement_Directions(struct camquake_path_point *p) {
 	GLC_Vertex3fv((GLfloat *)&p->x);
 	GLC_Vertex3fv((GLfloat *)&stop_mouse_y.x);
 	GLC_End();
+	//glEnable(GL_TEXTURE_2D);
 }
 
 void Camquake_Render_Path(struct camquake_path *path, struct color4f color_curve, struct color4f color_points) {
@@ -153,6 +155,7 @@ void Camquake_Render_Path(struct camquake_path *path, struct color4f color_curve
 	}
 	clear_color = 0;
 
+	/*
 	glDisable(GL_BLEND);
 	glActiveTexture(GL_TEXTURE0);
 	glDisable(GL_MULTISAMPLE);
@@ -162,6 +165,7 @@ void Camquake_Render_Path(struct camquake_path *path, struct color4f color_curve
 	glDisable (GL_TEXTURE_CUBE_MAP_EXT);
 	glDisable (GL_TEXTURE_RECTANGLE_ARB);
 	glLineWidth(4);
+	*/
 	if (camquake->selected_path == path && camquake->edit.select_mode== CQEM_SELECT_MODE_PATH) {
 		Camquake_Custom_Color(&camquake->colors.highlight_path);
 	} else {
@@ -192,9 +196,11 @@ void Camquake_Render_Path(struct camquake_path *path, struct color4f color_curve
 		}
 	}
 	GLC_End();
+	/*
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_TEXTURE_3D);
 	glEnable(GL_BLEND);
+	*/
 }
 
 void Camquake_Render_Setup (struct camquake_setup *setup) {
@@ -205,6 +211,7 @@ void Camquake_Render_Setup (struct camquake_setup *setup) {
 		// stupid needs to change
 	}
 
+	R_ApplyRenderingState( r_state_drawflat_without_lightmaps_glc);
 	Camquake_Render_Path(&setup->camera_path, camquake->colors.camera_path, camquake->colors.camera_point);
 	Camquake_Render_Path(&setup->view_path, camquake->colors.view_path, camquake->colors.view_point);
 	if (camquake->have_input) {
