@@ -1,8 +1,11 @@
 #include "camquake_internal.h"
 #include "../gl_local.h"
 #include "../glc_local.h"
+#include "../r_sprite3d.h"
 #include "../r_state.h"
+#include "../r_renderer.h"
 
+extern renderer_api_t renderer;
 extern struct camquake *camquake;
 qbool R_Project3DCoordinates(float objx, float objy, float objz, float* winx, float* winy, float* winz);
 
@@ -226,3 +229,63 @@ void Camquake_Render_Setup (struct camquake_setup *setup) {
 	}
 
 }
+
+static void Camquake_Render_Texture_Angles(texture_ref ref, vec3_t origin, vec3_t angles)
+{
+	int i;
+	int old_texture ;
+	byte current_color[4];
+	r_sprite3d_vert_t* vert;
+	vec3_t points[4], up, right, forward;
+	float scale = 50;
+
+	AngleVectors(angles, forward,right, up);
+
+	VectorScale(right, -1, right);
+
+	VectorMA(origin, scale, up, points[0]);
+	VectorMA(points[0], scale, right, points[0]);
+	VectorMA(origin, -scale, up, points[1]);
+	VectorMA(points[1], scale, right, points[1]);
+	VectorMA(origin, -scale, up, points[2]);
+	VectorMA(points[2], -scale, right, points[2]);
+	VectorMA(origin, scale, up, points[3]);
+	VectorMA(points[3], -scale, right, points[3]);
+
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &old_texture);
+
+	/*
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE0, ref.index);
+	*/
+	glBindTexture(GL_TEXTURE_2D, ref.index);
+	renderer.TextureUnitBind(0, ref);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glBegin(GL_QUADS);
+	glTexCoord2f(1, 0);
+	GLC_Vertex3fv((GLfloat *)points[0]);
+	glTexCoord2f(1, 1);
+	GLC_Vertex3fv((GLfloat *)points[1]);
+	glTexCoord2f(0, 1);
+	GLC_Vertex3fv((GLfloat *)points[2]);
+	glTexCoord2f(0, 0);
+	GLC_Vertex3fv((GLfloat *)points[3]);
+	GLC_End();
+	glBindTexture(GL_TEXTURE_2D, old_texture);
+
+}
+
+void Camquake_Render_Texture(struct camquake_setup *setup, float time) {
+	byte color[4];
+	texture_ref *texture;
+	r_sprite3d_vert_t v[4];
+	r_sprite3d_vert_t *vert;
+	vec3_t origin, angles, up, right, forward;
+
+	CQS_Interpolate(setup, time, (struct camquake_path_point *)&origin, (struct camquake_path_point *)&angles);
+	if (setup->texture) {
+		Camquake_Render_Texture_Angles(setup->texture->texture_ref, origin, angles);
+	}
+}
+

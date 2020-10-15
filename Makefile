@@ -582,6 +582,9 @@ ifdef CAMQUAKE
     OBJS_c += $(SRC_DIR)/camquake/camquake_input.o
     OBJS_c += $(SRC_DIR)/camquake/camquake_2d.o
     OBJS_c += $(SRC_DIR)/camquake/camquake_event.o
+    OBJS_c += $(SRC_DIR)/camquake/camquake_texture.o
+    OBJS_c += $(SRC_DIR)/camquake/camquake_texture_command.o
+    OBJS_c += $(SRC_DIR)/camquake/camquake_utility.o
     CFLAGS += -DCAMQUAKE
 endif
 

@@ -1,4 +1,20 @@
 #include "../quakedef.h"
+#include "../r_texture.h"
+
+typedef enum {
+  CQS_SETUP = 0,
+  CQS_UTILITY = 1,
+} cqs_type;
+
+
+typedef enum {
+  CQ_OK = 0,
+  CQ_ALLOCATE = 1 << 0,
+  CQ_EXISTS = 1 << 1,
+  CQ_WTF = 1 << 2,
+  CQ_NOTFOUND= 1 << 3,
+} cq_errors;
+
 
 struct camquake_path_point {
 	float x, y, z;
@@ -33,6 +49,7 @@ struct camquake_setup {
 	unsigned int first_frame;
 	struct camquake_trigger *triggers;
 	struct camquake_interpolation *interpolations;
+	struct camquake_texture *texture;
 };
 
 struct color4f {
@@ -89,6 +106,13 @@ struct camquake_segment {
   struct camquake_path_point *p0, *p1;
 };
 
+struct camquake_texture {
+  struct camquake_texture *next;
+  char *name;
+  char *texture;
+  texture_ref texture_ref;
+};
+
 struct camquake {
 	cvar_t enabled;
 	cvar_t auto_playback;
@@ -103,6 +127,12 @@ struct camquake {
 	struct camquake_path_point *selected_point_p;
 	struct camquake_path *selected_path;
 	struct camquake_segment selected_segment;
+
+	struct camquake_setup *utility;
+	struct camquake_setup *active_utility;
+
+
+	struct camquake_texture *textures;
 	float current_time;
 	int have_input;
 	struct camquake_edit_mode edit;
@@ -158,3 +188,9 @@ void Camquake_Interpolations(struct camquake_setup *setup, float t);
 void Camquake_Triggers(struct camquake_setup *setup, float t);
 void Camquake_Add_Trigger(void);
 void Camquake_Add_Interpolation(void);
+struct camquake_texture *Camquake_Texture_Find(char *name, struct camquake_texture **prev);
+int Camquake_Texture_Free(struct camquake_texture *t);
+int Camquake_Texture_Load(char *name, char *texture);
+void Camquake_Texture_Command(int offset, int count);
+void Camquake_Render_Texture(struct camquake_setup *setup, float time);
+void Camquake_Utility_Render_Frame(void);

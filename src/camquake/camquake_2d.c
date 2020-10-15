@@ -58,6 +58,10 @@ void Camquake_2D_Draw(void)
 		return;
 	}
 
+	if (camquake->textures) {
+		Draw_2dAlphaTexture(100, 100, 100, 100, camquake->textures->texture_ref, 1);
+	}
+
 	if (camquake->selected_point)
 		draw_on_screen(lptr, "selected point: %f %f %f - %f", camquake->selected_point->x, camquake->selected_point->y, camquake->selected_point->z, camquake->selected_point->time);
 }

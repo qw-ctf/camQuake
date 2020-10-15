@@ -2298,6 +2298,9 @@ msversion.bat</Command>
 	<ClCompile Include="src\camquake\camquake_input.c" />
 	<ClCompile Include="src\camquake\camquake_path.c" />
 	<ClCompile Include="src\camquake\camquake_setup.c" />
+	<ClCompile Include="src\camquake\camquake_texture.c" />
+	<ClCompile Include="src\camquake\camquake_texture_command.c" />
+	<ClCompile Include="src\camquake\camquake_utility.c" />
     <ClCompile Include="src\vk_aliasmodel.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='dbg-classic|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='dbg-all|Win32'">true</ExcludedFromBuild>
