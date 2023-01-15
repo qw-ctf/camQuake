@@ -35,6 +35,21 @@
 const char*    pr2_ent_data_ptr;
 vm_t*          sv_vm = NULL;
 
+typedef void (*ext_trap_t)(byte* base, uintptr_t mask, pr2val_t* stack, pr2val_t*retval);
+
+void EXT_SetExtField(byte* base, uintptr_t mask, pr2val_t* stack, pr2val_t*retval);
+
+struct
+{
+	char *extname;
+	ext_trap_t fun;
+} ext_traps[] =
+{
+	{"SetExtField", EXT_SetExtField},
+};
+
+ext_trap_t ext_trap_tbl[G_EXTENSIONS_MAX];
+
 /*
 ============
 PR2_RunError
@@ -2367,6 +2382,16 @@ void PF2_FS_GetFileList(byte* base, uintptr_t mask, pr2val_t* stack, pr2val_t*re
 		Q_free(list[i]);
 }
 
+void EXT_SetExtField(byte* base, uintptr_t mask, pr2val_t* stack, pr2val_t*retval)
+{
+	int e = NUM_FOR_EDICT( (edict_t *) VM_POINTER( base, mask, stack[1]._int ) );
+	edict_t *ed = EDICT_NUM( e );
+	char *key = VM_POINTER(base,mask,stack[2].string);
+
+	retval->_int = 0;
+	return;
+}
+
 /*
   int trap_Map_Extension( const char* ext_name, int mapto)
   return:
@@ -2377,17 +2402,34 @@ void PF2_FS_GetFileList(byte* base, uintptr_t mask, pr2val_t* stack, pr2val_t*re
 extern int pr2_numAPI;
 void PF2_Map_Extension(byte* base, uintptr_t mask, pr2val_t* stack, pr2val_t*retval)
 {
+	char *name	= VM_POINTER(base,mask,stack[0].string);
 	int mapto	= stack[1]._int;
+	int n_exts = sizeof(ext_trap_tbl) / sizeof(*(ext_trap_tbl));
+	int i;
 
-	if( mapto <  pr2_numAPI)
+	if (mapto < pr2_numAPI || mapto >= n_exts)
 	{
-
 		retval->_int = -2;
 		return;
 	}
 
-	retval->_int = -1;
+	if (!name)
+	{
+		retval->_int = -1;
+		return;
+	}
+
+	for (i = 0; i < n_exts; i++)
+	{
+		if (!strcmp(ext_traps[i].extname, name))
+		{
+			ext_trap_tbl[mapto] = ext_traps[i].fun;
+			retval->_int = mapto;
+			return;
+		}
+	}
 }
+
 ////////////////////
 //
 // timewaster functions
@@ -2948,9 +2990,6 @@ intptr_t sv_syscall(intptr_t arg, ...) //must passed ints
 	va_list argptr;
 	pr2val_t ret;
 
-	if( arg >= pr2_numAPI )
-		PR2_RunError ("sv_syscall: Bad API call number");
-
 	va_start(argptr, arg);
 	args[0] =va_arg(argptr, intptr_t);
 	args[1] =va_arg(argptr, intptr_t);
@@ -2974,7 +3013,21 @@ intptr_t sv_syscall(intptr_t arg, ...) //must passed ints
 	args[19]=va_arg(argptr, intptr_t);
 	va_end(argptr);
 
-	pr2_API[arg] ( 0, (uintptr_t)~0, (pr2val_t*)args, &ret);
+	if( arg >= pr2_numAPI )
+	{
+		if ( arg < G_EXTENSIONS_MAX && ext_trap_tbl[arg] )
+		{
+			ext_trap_tbl[arg]( 0, (uintptr_t)~0, (pr2val_t*)args, &ret);
+		}
+		else
+		{
+			PR2_RunError ("sv_syscall: Bad API call number");
+		}
+	}
+	else
+	{
+		pr2_API[arg] ( 0, (uintptr_t)~0, (pr2val_t*)args, &ret);
+	}
 
 	return ret._int;
 }
