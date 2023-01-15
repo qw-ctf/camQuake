@@ -1637,6 +1637,7 @@ void PF2_makestatic(byte* base, uintptr_t mask, pr2val_t* stack, pr2val_t*retval
 	s->frame = ent->v.frame;
 	s->colormap = ent->v.colormap;
 	s->skinnum = ent->v.skin;
+	s->trans = ent->xv.alpha ? bound(1, ent->xv.alpha * 254, 254) : 0;
 	VectorCopy(ent->v.origin, s->origin);
 	VectorCopy(ent->v.angles, s->angles);
 	++sv.static_entity_count;

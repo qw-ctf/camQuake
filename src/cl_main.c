@@ -555,7 +555,9 @@ unsigned int CL_SupportedMVDExtensions1(void)
 #endif
 
 #if defined(MVD_PEXT1_EXTRA_PFS) && defined(FTE_PEXT_TRANS)
-    extensions_supported |= MVD_PEXT1_EXTRA_PFS;
+	if (cl_pext_alpha.integer) {
+		extensions_supported |= MVD_PEXT1_EXTRA_PFS;
+	}
 #endif
 
 	return extensions_supported;

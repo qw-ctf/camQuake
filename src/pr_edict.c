@@ -170,6 +170,7 @@ void ED_Free (edict_t *ed)
 	VectorClear (ed->v.angles);
 	ed->v.nextthink = -1;
 	ed->v.solid = 0;
+	ed->xv.alpha = 0;
 
 	ed->e->freetime = sv.time;
 }
@@ -922,6 +923,10 @@ const char *ED_ParseEdict (const char *data, edict_t *ent)
 		// and are immediately discarded by quake
 		if (keyname[0] == '_')
 			continue;
+
+		if (!strcmp (keyname, "alpha")) {
+			ent->xv.alpha = atof (com_token);
+		}
 
 		key = ED_FindField (keyname);
 		if (!key)
