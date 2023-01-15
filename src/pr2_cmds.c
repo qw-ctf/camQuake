@@ -2388,6 +2388,13 @@ void EXT_SetExtField(byte* base, uintptr_t mask, pr2val_t* stack, pr2val_t*retva
 	edict_t *ed = EDICT_NUM( e );
 	char *key = VM_POINTER(base,mask,stack[2].string);
 
+	if (key && !strcmp(key, "alpha"))
+	{
+		ed->xv.alpha = stack[3]._float;
+		retval->_float = stack[3]._float;
+		return;
+	}
+
 	retval->_int = 0;
 	return;
 }
