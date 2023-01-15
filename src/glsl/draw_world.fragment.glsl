@@ -45,6 +45,7 @@ in vec4 UnClipped;
 
 in float mix_floor;
 in float mix_wall;
+in float alpha;
 
 layout(location=0) out vec4 frag_colour;
 #ifdef DRAW_GEOMETRY
@@ -139,6 +140,9 @@ void main()
 	// Avoid black artifacts at border between texture and transparency visible in fog
 	texColor = vec4(texColor.rgb, 1.0);
 #endif
+
+	if (alpha > 0)
+		texColor = vec4(texColor.rgb, alpha);
 
 	turbType = Flags & EZQ_SURFACE_TYPE;
 	if (turbType != 0) {
