@@ -1,0 +1,77 @@
+name: ezquake
+
+on: [push]
+
+jobs:
+  windows-build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: microsoft/setup-msbuild@v1.1
+        
+      - run: msbuild -m -p:Configuration=rls-modern,Platform=x64
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ezquake-latest-windows
+          path: |
+            ezquake.exe
+  linux-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: "Install dependencies"
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get -qq install --no-install-recommends gcc make libsdl2-dev libsndfile-dev libjansson-dev libspeex-dev libexpat1-dev libspeexdsp-dev libcurl4-openssl-dev libjpeg-dev libpng-dev
+
+      - name: "Build"
+        run: |
+          make -j${{ steps.cpu-cores.outputs.count }}
+          make strip
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ezquake-latest-linux
+          path: |
+            ezquake-linux-x86_64-camquake
+  macos-build:
+    runs-on: macos-12
+
+    steps:
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Install dependencies
+        run: .github/workflows/scripts/homebrew.sh install-intel
+
+      - name: Build
+        run: .github/workflows/scripts/homebrew.sh build-intel
+
+      - name: Create Bundle
+        run: .github/workflows/scripts/homebrew.sh create-bundle
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ezquake-latest-macos-x86_64
+          path: |
+            artifact
