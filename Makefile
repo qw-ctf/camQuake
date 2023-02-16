@@ -570,14 +570,14 @@ endif
 
 ifdef CAMQUAKE
     EZ_POSTFIX := "-camquake"
-    OBJS_c += camquake/camquake.o
-    OBJS_c += camquake/camquake_path.o
-    OBJS_c += camquake/camquake_setup.o
-    OBJS_c += camquake/camquake_command.o
-    OBJS_c += camquake/camquake_glc.o
-    OBJS_c += camquake/camquake_input.o
-    OBJS_c += camquake/camquake_2d.o
-    OBJS_c += camquake/camquake_event.o
+    OBJS_c += $(SRC_DIR)/camquake/camquake.o
+    OBJS_c += $(SRC_DIR)/camquake/camquake_path.o
+    OBJS_c += $(SRC_DIR)/camquake/camquake_setup.o
+    OBJS_c += $(SRC_DIR)/camquake/camquake_command.o
+    OBJS_c += $(SRC_DIR)/camquake/camquake_glc.o
+    OBJS_c += $(SRC_DIR)/camquake/camquake_input.o
+    OBJS_c += $(SRC_DIR)/camquake/camquake_2d.o
+    OBJS_c += $(SRC_DIR)/camquake/camquake_event.o
     CFLAGS += -DCAMQUAKE
 endif
 
