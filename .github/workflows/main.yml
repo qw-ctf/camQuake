@@ -14,7 +14,7 @@ jobs:
 
       - uses: microsoft/setup-msbuild@v1.1
         
-      - run: msbuild -m -p:Configuration=rls-modern,Platform=x64
+      - run: msbuild -m -p:Configuration=rls-all,Platform=x64
 
       - uses: actions/upload-artifact@v3
         with:
