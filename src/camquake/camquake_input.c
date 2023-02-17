@@ -128,7 +128,7 @@ void Camquake_Find_Highlight (struct camquake_path_point *cursor) {
 }
 
 void Camquake_Change_Time(float x, float y, struct camquake_path_point *point, struct camquake_path *path) {
-	int i;
+	int i = 0;
 	if (x == 0 && y == 0 )
 		return;
 
