@@ -568,6 +568,8 @@ endif
 #    LIBS_c += $(OGG_LIBS)
 #endif
 
+CAMQUAKE = 1
+
 ifdef CAMQUAKE
     EZ_POSTFIX := "-camquake"
     OBJS_c += $(SRC_DIR)/camquake/camquake.o
