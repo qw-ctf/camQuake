@@ -98,7 +98,7 @@ struct camquake {
 	struct camquake_colors colors;
 	struct camquake_setup *setup;
 	struct camquake_setup *active_setup;
-	struct camquake_setup *selected_setup;;
+	struct camquake_setup *selected_setup;
 	struct camquake_path_point *selected_point;
 	struct camquake_path_point *selected_point_p;
 	struct camquake_path *selected_path;
