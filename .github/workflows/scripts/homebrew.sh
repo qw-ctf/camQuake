@@ -64,6 +64,8 @@ function create_bundle() {
     fi
     sh misc/install/create_osx_bundle.sh $ARCH
 
+    mv ezquake-darwin-x86_64-camquake ezquake-darwin-x86_64
+
     echo
     echo "Bundled content types:"
     find ezQuake.app/Contents -type f -exec file {} \;
