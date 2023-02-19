@@ -54,6 +54,8 @@ function install_intel() {
 }
 
 function create_bundle() {
+    mv ezquake-darwin-x86_64-camquake ezquake-darwin-x86_64
+
     sh misc/install/create_osx_bundle.sh
 
     echo
