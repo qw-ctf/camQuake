@@ -184,6 +184,7 @@ void Camquake_Frame(void)
 	}
 	camquake->frame++;
 	camquake->current_time += cls.frametime;
+
 	// used by "camquake playback"
 	if (camquake->active_setup) {
 		if (camquake->current_time <= camquake->active_setup->time_stop - camquake->active_setup->time_start) {
@@ -216,8 +217,20 @@ void Camquake_Frame(void)
 	}
 }
 
+void Camquake_Render_3DFrame(void) {
+	if (camquake->enabled.value != 1) {
+		return;
+	}
+	Camquake_Utility_Render_Frame();
+
+}
+
 void Camquake_Render_Frame(void)
 {
+	if (camquake->enabled.value != 1) {
+		return;
+	}
+
 	if (camquake->render.value != 1) {
 		return;
 	}
@@ -225,6 +238,7 @@ void Camquake_Render_Frame(void)
 	if (camquake->selected_setup) {
 		Camquake_Render_Setup(camquake->selected_setup);
 	}
+
 }
 
 void Camquake_Setup_Projection (void) {

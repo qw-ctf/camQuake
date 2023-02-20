@@ -809,9 +809,6 @@ void R_PostProcessScene(void)
 
 static void R_Render3DEffects(void)
 {
-#ifdef CAMQUAKE
-	Camquake_Render_Frame();
-#endif
 	// Adds particles (all types)
 	R_DrawParticles();
 
@@ -855,6 +852,10 @@ void R_RenderView(void)
 	R_MarkLeaves();	// done here so we know if we're in water
 	R_CreateWorldTextureChains();
 
+#ifdef CAMQUAKE
+	Camquake_Render_3DFrame();
+#endif
+
 	// render normal view
 	R_DrawWorld();		// adds static entities to the list
 
@@ -877,6 +878,10 @@ void R_RenderView(void)
 	R_Render3DHud();
 
 	renderer.RenderView();
+
+#ifdef CAMQUAKE
+	Camquake_Render_Frame();
+#endif
 }
 
 qbool R_PointIsUnderwater(vec3_t point)

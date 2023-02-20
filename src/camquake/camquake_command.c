@@ -1,44 +1,57 @@
-#include "../common.h"
 #include "../mathlib.h"
 #include "camquake_internal.h"
 
 extern struct camquake *camquake;
 
-void Camquake_Write_Config(struct camquake_setup *setup, char *name) {
+void Camquake_Write_Config(cqs_type stype, struct camquake_setup *setup, char *name) {
     char filepath[MAX_PATH];
     FILE *f;
     struct camquake_path_point *p;
     struct camquake_trigger *trigger;
     struct camquake_interpolation *inter;
     int i;
+    char *type = NULL;
+
+    if (stype == CQS_SETUP) {
+	type = "setup";
+    } else if (stype == CQS_UTILITY) {
+	type = "utility";
+    } else {
+	Com_Printf("unkown type\n");
+    return;
+    }
 
     snprintf(filepath, sizeof(filepath), "%s/camquake/%s.cfg", com_basedir, name);
     if ((f = fopen(filepath, "w")) != NULL) {
-	    fprintf(f, "camquake setup add \"%s\"\n", name);
+	    fprintf(f, "camquake %s add \"%s\"\n", type, name);
 
 	    if (setup->camera_path.path) {
 		for (i=0; i<setup->camera_path.path->index; i++) {
 			p = &setup->camera_path.path->point[i];
-			fprintf(f, "camquake setup add_camera_point \"%s\" %f %f %f %f\n", name, p->x, p->y, p->z, p->time);
+			fprintf(f, "camquake %s add_camera_point \"%s\" %f %f %f %f\n", type, name, p->x, p->y, p->z, p->time);
 		}
 	    }
 	    if (setup->view_path.path) {
 		for (i=0; i<setup->view_path.path->index; i++) {
 		    p = &setup->view_path.path->point[i];
-		    fprintf(f, "camquake setup add_view_point \"%s\" %f %f %f %f\n", name, p->x, p->y, p->z, p->time);
+		    fprintf(f, "camquake %s add_view_point \"%s\" %f %f %f %f\n",type,  name, p->x, p->y, p->z, p->time);
 		}
 	    }
 	    for (trigger=setup->triggers; trigger != NULL; trigger=trigger->next) {
 
-		    fprintf(f, "camquake setup add_trigger \"%s\" \"%s\" %f \"%s\"\n", name, Camquake_Event_Name(trigger->type), trigger->time, trigger->command);
+		    fprintf(f, "camquake %s add_trigger \"%s\" \"%s\" %f \"%s\"\n", type, name, Camquake_Event_Name(trigger->type), trigger->time, trigger->command);
 	    }
 
 	    for (inter=setup->interpolations; inter!= NULL; inter=inter->next) {
 
-		    fprintf(f, "camquake setup add_interpolation \"%s\" \"%s\" %f %f \"%s\" %f %f\n", name, Camquake_Event_Name(inter->type), inter->time_start, inter->time_stop, inter->command, inter->value_start, inter->value_stop);
+		    fprintf(f, "camquake %s add_interpolation \"%s\" \"%s\" %f %f \"%s\" %f %f\n", type, name, Camquake_Event_Name(inter->type), inter->time_start, inter->time_stop, inter->command, inter->value_start, inter->value_stop);
+	    }
+	    if (setup->texture) {
+		    fprintf(f, "camquake texture load \"%s\" \"%s\"\n", type, setup->texture->name, setup->texture->texture);
+		    fprintf(f, "camquake %s texture \"%s\"\n", type, setup->texture->name);
 	    }
 	    fclose(f);
-	    Com_Printf("setup \'%s\" saved as \"%s\" in \"%s\"\n", setup->name, name, filepath);
+	    Com_Printf("%s \'%s\" saved as \"%s\" in \"%s\"\n", type, setup->name, name, filepath);
     } else {
 	    Com_Printf("could not save to \"%s\"\n", filepath);
     }
@@ -150,30 +163,40 @@ void Camquake_Edit(void) {
     camquake->have_input = 1;
 }
 
-void Camquake_Setup(void) {
+void Camquake_Setup(cqs_type stype) {
 	struct camquake_setup *setup;
 	struct camquake_path_point point;
+	struct camquake_setup **setup_type;
+	char *type;
 	int i;
+
+	if (stype == CQS_UTILITY) {
+	    type = "utility";
+	    setup_type = &camquake->utility;
+	} else {
+	    type = "setup";
+	    setup_type = &camquake->setup;
+	}
 
 	if (strcmp(Cmd_Argv(2), "add") == 0) {
 		if (Cmd_Argc() <= 3) {
 			Camquake_Help_Setup();
 			return;
 		}
-		setup = CQS_New(&camquake->setup, Cmd_Argv(3));
+		setup = CQS_New(setup_type, Cmd_Argv(3));
 		if (setup == NULL) {
-			Com_Printf("Could not add a setup with the name %s\n", Cmd_Argv(3));
+			Com_Printf("Could not add a %s with the name %s\n", type, Cmd_Argv(3));
 			return;
 		}
-		Com_Printf("setup \"%s\" added.\n", Cmd_Argv(3));
+		Com_Printf("%s \"%s\" added.\n", type, Cmd_Argv(3));
 	} else if (strcmp(Cmd_Argv(2), "remove") == 0) {
 		if (Cmd_Argc() != 4) {
-			Com_Printf("camquake remove \"setup name\"\n");
+			Com_Printf("camquake remove \"%s name\"\n", type);
 			return;
 		}
-		setup = CQS_Find(&camquake->setup, Cmd_Argv(3));
+		setup = CQS_Find(setup_type, Cmd_Argv(3));
 		if (setup == NULL) {
-		    Com_Printf("setup \"%s\" not found.\n", Cmd_Argv(3));
+		    Com_Printf("%s \"%s\" not found.\n", type, Cmd_Argv(3));
 		    return;
 		} else {
 		    if (camquake->selected_setup == setup) {
@@ -181,15 +204,15 @@ void Camquake_Setup(void) {
 			camquake->selected_path = NULL;
 			camquake->selected_point = NULL;
 		    }
-		    CQS_Remove(&camquake->setup, Cmd_Argv(3));
-		    Com_Printf("setup \"%s\" removed.\n", Cmd_Argv(3));
+		    CQS_Remove(setup_type, Cmd_Argv(3));
+		    Com_Printf("%s \"%s\" removed.\n", type, Cmd_Argv(3));
 		}
 	} else if (strcmp(Cmd_Argv(2), "list") == 0) {
 		if (camquake->setup == NULL) {
 			Com_Printf("no setups available.\n");
 			return;
 		}
-		setup = camquake->setup;
+		setup = *setup_type;
 		while (setup != NULL) {
 			Camquake_Print_Setup(setup);
 			setup = setup->next;
@@ -206,9 +229,9 @@ void Camquake_Setup(void) {
 			Camquake_Help_Setup();
 			return;
 		}
-		setup = CQS_Find(&camquake->setup, Cmd_Argv(3));
+		setup = CQS_Find(setup_type, Cmd_Argv(3));
 		if (setup == NULL) {
-			Com_Printf("setup \"%s\" not found\n", Cmd_Argv(3));
+			Com_Printf("%s \"%s\" not found\n", type, Cmd_Argv(3));
 			return;
 		}
 		if (strcmp(Cmd_Argv(4), "current") == 0) {
@@ -254,9 +277,9 @@ void Camquake_Setup(void) {
 			Camquake_Help_Setup();
 			return;
 		}
-		setup = CQS_Find(&camquake->setup, Cmd_Argv(3));
+		setup = CQS_Find(setup_type, Cmd_Argv(3));
 		if (setup == NULL) {
-			Com_Printf("setup \"%s\" not found\n", Cmd_Argv(3));
+			Com_Printf("%s \"%s\" not found\n", type, Cmd_Argv(3));
 			return;
 		}
 		if (strcmp(Cmd_Argv(4), "current") == 0) {
@@ -299,37 +322,66 @@ void Camquake_Setup(void) {
 			setup->changed = 1;
 			return;
 		}
+	} else if (strcmp(Cmd_Argv(2), "texture") == 0) {
+	    if (stype != CQS_UTILITY) {
+		Com_Printf("can only assign a texture to a utility\n");
+		return;
+	    }
+	    setup = CQS_Find(setup_type, Cmd_Argv(3));
+	    if (setup == NULL) {
+		Com_Printf("%s \"%s\" not found\n", type, Cmd_Argv(3));
+		return;
+	    }
+	    struct camquake_texture *t;
+	    t = Camquake_Texture_Find(Cmd_Argv(4), NULL);
+	    if (t == NULL) {
+		Com_Printf("could not find texture \"%s\"", Cmd_Argv(4));
+		return;
+	    }
+	    setup->texture = t;
+	    return;
 	} else if (strcmp(Cmd_Argv(2), "write") == 0) {
-		setup = CQS_Find(&camquake->setup, Cmd_Argv(3));
+		setup = CQS_Find(setup_type, Cmd_Argv(3));
 		if (setup == NULL) {
-			Com_Printf("setup \"%s\" not found\n", Cmd_Argv(3));
+			Com_Printf("%s \"%s\" not found\n", type, Cmd_Argv(3));
 			return;
 		}
 		if (Cmd_Argc() == 5) {
-			Camquake_Write_Config(setup, Cmd_Argv(4));
+			Camquake_Write_Config(stype, setup, Cmd_Argv(4));
 		} else {
-			Camquake_Write_Config(setup, setup->name);
+			Camquake_Write_Config(stype, setup, setup->name);
 		}
 	}
 }
 
 void Camquake_Playback(void) {
 	struct camquake_setup *setup;
-	if (Cmd_Argc() < 3) {
-	    Com_Printf("start|stop.\n");
+	struct camquake_setup **setup_type, **active_type;
+	if (Cmd_Argc() < 4) {
+	    Com_Printf("setup|itility start|stop name.\n");
 	    return;
 	}
-	if (strcmp(Cmd_Argv(2), "start") == 0) {
+	if (strcmp(Cmd_Argv(2), "setup") == 0) {
+	    setup_type = &camquake->setup;
+	    active_type = &camquake->active_setup;
+	} else if (strcmp(Cmd_Argv(2), "utility") == 0) {
+	    setup_type = &camquake->utility;
+	    active_type = &camquake->active_utility;
+	} else {
+	    Com_Printf("setup|itility start|stop name.\n");
+	    return;
+	}
+	if (strcmp(Cmd_Argv(3), "start") == 0) {
 	    if (Cmd_Argc() < 4) {
 		    Com_Printf("need a camera setup to play.\n");
 		    return;
 	    }
-	    setup = CQS_Find(&camquake->setup, Cmd_Argv(3));
+	    setup = CQS_Find(setup_type, Cmd_Argv(4));
 	    if (setup == NULL) {
-		Com_Printf("setup \"%s\" does not exist. try camquake setup list\n");
+		Com_Printf("\"%s\" does not exist. try camquake setup list\n");
 		return;
 	    }
-	    camquake->active_setup = setup;
+	    *active_type  = setup;
 
 	    if (Cmd_Argc() == 5) {
 		camquake->current_time = atof(Cmd_Argv(4));
@@ -338,12 +390,12 @@ void Camquake_Playback(void) {
 	    }
 	} else if (strcmp(Cmd_Argv(2), "stop") == 0) {
 	    camquake->current_time = 0;
-	    if (camquake->active_setup) {
-		camquake->active_setup->first_frame = 0;
-		camquake->active_setup = NULL;
+	    if (*active_type) {
+		(*active_type)->first_frame = 0;
+		*active_type = NULL;
 	    }
 	} else {
-	    Com_Printf("start|stop.\n");
+	    Com_Printf("setup|utility start|stop.\n");
 	}
 	return;
 }
@@ -351,17 +403,29 @@ void Camquake_Playback(void) {
 
 void Camquake_Select(void) {
 	struct camquake_setup *setup;
-	if (Cmd_Argc() < 3) {
-		Com_Printf("need a camera setup to select.\n");
+	struct camquake_setup **setup_type, **selected_type;
+	char *type;
+	if (Cmd_Argc() < 4) {
+		Com_Printf("select setup|utility name.\n");
 		return;
 	}
-	setup = CQS_Find(&camquake->setup, Cmd_Argv(2));
+	if (strcmp(Cmd_Argv(2), "setup") == 0) {
+	    setup_type = &camquake->setup;
+	    type = "setup";
+	} else if (strcmp(Cmd_Argv(2), "utility") == 0) {
+	    setup_type = &camquake->utility;
+	    type = "utility";
+	} else {
+		Com_Printf("select setup|utility name.\n");
+	    return;
+	}
+	setup = CQS_Find(setup_type, Cmd_Argv(3));
 	if (setup == NULL) {
-		Com_Printf("setup \"%s\" does not exist. try camquake setup list\n");
+		Com_Printf("%s \"%s\" does not exist. try camquake %s list\n", type, type);
 		return;
 	}
 	camquake->selected_setup = setup;
-	Com_Printf("setup \"%s\" selected.\n");
+	Com_Printf("%s \"%s\" selected.\n", type, setup->name);
 }
 
 
@@ -398,8 +462,14 @@ void Camquake_Cmd(void) {
 		}
 		Camquake_Help();
 		return;
+	} else if (strcmp(Cmd_Argv(1), "utility") == 0) {
+		Camquake_Setup(CQS_UTILITY);
+		return;
 	} else if (strcmp(Cmd_Argv(1), "setup") == 0) {
-		Camquake_Setup();
+		Camquake_Setup(CQS_SETUP);
+		return;
+	} else if (strcmp(Cmd_Argv(1), "texture") == 0) {
+		Camquake_Texture_Command(2, Cmd_Argc() - 2);
 		return;
 	} else if (strcmp(Cmd_Argv(1), "playback") == 0) {
 		Camquake_Playback();
