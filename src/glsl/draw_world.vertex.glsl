@@ -36,6 +36,7 @@ layout(std140, binding = EZQ_GL_BINDINGPOINT_WORLDMODEL_SURFACES) buffer surface
 
 out float mix_floor;
 out float mix_wall;
+out float alpha;
 
 layout(std140, binding=EZQ_GL_BINDINGPOINT_BRUSHMODEL_DRAWDATA) buffer WorldCvars {
 	WorldDrawInfo drawInfo[];
@@ -57,6 +58,12 @@ void main()
 	Normal = surfaces[surfaceNumber].normal.xyz;
 	UnClipped = drawInfo[_instanceId].mvMatrix * vec4(position, 1.0);
 #endif
+
+	if (drawInfo[_instanceId].alpha == 0) {
+	  alpha = -1.0;
+	} else {
+	  alpha = drawInfo[_instanceId].alpha;
+	}
 
 	FlatColor = flatColor;
 	Flags = vboFlags | drawCallFlags | textureFlags;

@@ -1024,7 +1024,7 @@ void CL_LinkPacketEntities(void)
 		}
 #if defined(FTE_PEXT_TRANS)
 		//set trans
-		ent.alpha = state->trans/255.0;
+		ent.alpha = state->trans ? (state->trans - 1) / 254.0f : 1;
 #endif
 
 		if (ent.model->flags & EF_ROTATE)
@@ -1366,7 +1366,21 @@ void CL_ParsePlayerinfo (void)
 	} 
 	else 
 	{
-		flags = state->flags = MSG_ReadShort ();
+		flags = (unsigned short) MSG_ReadShort ();
+
+#ifdef MVD_PEXT1_EXTRA_PFS
+		if (cls.fteprotocolextensions & FTE_PEXT_TRANS && cls.mvdprotocolextensions1 & MVD_PEXT1_EXTRA_PFS)
+		{
+			if (flags & PF_EXTRA_PFS)
+				flags |= MSG_ReadByte() << 16;
+		}
+		else
+		{
+			flags = (flags & 0x3fff) | ((flags & 0xc000) << 8);
+		}
+#endif
+
+		state->flags = flags;
 
 		state->messagenum = cl.parsecount;
 		if (cls.mvdprotocolextensions1 & MVD_PEXT1_FLOATCOORDS) {

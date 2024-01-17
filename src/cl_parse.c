@@ -1887,6 +1887,7 @@ void CL_ParseStatic (qbool extended)
 	ent->frame = es.frame;
 	ent->colormap = vid.colormap;
 	ent->skinnum = es.skinnum;
+	ent->alpha = es.trans ? (es.trans - 1) / 254.0f : 1;
 
 	VectorCopy(es.origin, ent->origin);
 	VectorCopy(es.angles, ent->angles);

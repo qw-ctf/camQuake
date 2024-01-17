@@ -63,13 +63,19 @@ typedef struct sv_edict_s
 	double		lastruntime;	// sv.time when SV_RunEntity was last called for this edict (Tonik)
 } sv_edict_t;
 
+typedef struct extentvars_s
+{
+	float	alpha;
+} extentvars_t;
+
 typedef struct edict_s
 {
-	sv_edict_t	*e;			// server side part of the edict_t,
-							// basically we can get rid of this pointer at all, since we can access it via sv.sv_edicts[num]
-							// but this way it more friendly, I think.
+	sv_edict_t		*e;			// server side part of the edict_t,
+								// basically we can get rid of this pointer at all, since we can access it via sv.sv_edicts[num]
+								// but this way it more friendly, I think.
 
-	entvars_t	v;			// C exported fields from progs
+	extentvars_t	xv;			// extended entity fields set via SetExtField
+	entvars_t		v;			// C exported fields from progs
 	// other fields from progs come immediately after
 } edict_t;
 
