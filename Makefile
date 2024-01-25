@@ -571,7 +571,7 @@ endif
 CAMQUAKE = 1
 
 ifdef CAMQUAKE
-    EZ_POSTFIX := "-camquake"
+    # EZ_POSTFIX := "-camquake"
     OBJS_c += $(SRC_DIR)/camquake/camquake.o
     OBJS_c += $(SRC_DIR)/camquake/camquake_path.o
     OBJS_c += $(SRC_DIR)/camquake/camquake_setup.o
