@@ -20,7 +20,7 @@ struct camquake_path_point *CQP_Point_New(struct camquake_path_point_array **pat
 }
 
 void CQP_Insert_Point(struct camquake_path_point_array **path_point_array, struct camquake_path_point *p) {
-	struct camquake_path_point *np;
+	struct camquake_path_point *np = NULL;
 	int i;
 	if (*path_point_array == NULL) {
 		np = CQP_Point_New(path_point_array);

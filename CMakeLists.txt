@@ -631,6 +631,8 @@ set(client_headers
         ${SOURCE_DIR}/wad.h
         ${SOURCE_DIR}/xsd.h
         ${SOURCE_DIR}/xsd_document.h
+        ${SOURCE_DIR}/camquake/camquake.h
+        ${SOURCE_DIR}/camquake/camquake_internal.h
 )
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     list(APPEND client_headers ${SOURCE_DIR}/movie_avi.h)
@@ -728,6 +730,14 @@ set(client
         ${SOURCE_DIR}/wad.c
         ${SOURCE_DIR}/xsd.c
         ${SOURCE_DIR}/xsd_document.c
+        ${SOURCE_DIR}/camquake/camquake.c
+        ${SOURCE_DIR}/camquake/camquake_path.c
+        ${SOURCE_DIR}/camquake/camquake_setup.c
+        ${SOURCE_DIR}/camquake/camquake_command.c
+        ${SOURCE_DIR}/camquake/camquake_glc.c
+        ${SOURCE_DIR}/camquake/camquake_input.c
+        ${SOURCE_DIR}/camquake/camquake_2d.c
+        ${SOURCE_DIR}/camquake/camquake_event.c
         ${client_headers}
 )
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -831,6 +841,7 @@ target_compile_definitions(ezquake PRIVATE
         BUILDSTRING="${CMAKE_SYSTEM_NAME}"
         CPUSTRING="${CMAKE_SYSTEM_PROCESSOR}"
 
+        CAMQUAKE
         JSS_CAM
         USE_PR2
         WITH_NQPROGS

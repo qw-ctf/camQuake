@@ -153,7 +153,6 @@ void Camquake_Edit(void) {
 void Camquake_Setup(void) {
 	struct camquake_setup *setup;
 	struct camquake_path_point point;
-	int i;
 
 	if (strcmp(Cmd_Argv(2), "add") == 0) {
 		if (Cmd_Argc() <= 3) {
@@ -366,7 +365,6 @@ void Camquake_Select(void) {
 
 
 void Camquake_Cmd(void) {
-	int i;
 	if (Cmd_Argc() < 2) {
 		Camquake_Available_Commands();
 		return;

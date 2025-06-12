@@ -69,7 +69,7 @@ void Interpolate_Catmull(struct camquake_path_point *p0, struct camquake_path_po
 
 
 void CQS_Interpolate_Path(struct camquake_path_point_array *path, float t, struct camquake_path_point *out) {
-	float d, da, split;
+	float da;
 	int i;
 	struct camquake_path_point temp;
 	if (path == NULL) {
@@ -82,7 +82,6 @@ void CQS_Interpolate_Path(struct camquake_path_point_array *path, float t, struc
 	} else if (path->index == 2) {
 		Interpolate_Linear(&path->point[0], &path->point[1], t/(path->point[1].time - path->point[0].time), out);
 	} else if (path->index > 2) {
-		d = 0;
 		i = 0;
 		while (t > path->point[i].time - path->point[0].time) {
 			i++;

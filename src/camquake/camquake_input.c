@@ -27,7 +27,6 @@ void Camquake_Change_Select_Mode(int direction) {
 
 void Camquake_Insert_Segment_Point(void) {
 	float t;
-	int i;
 	struct camquake_path_point p;
 	struct camquake_path_point_array *path;
 	p.x = 0;
@@ -128,7 +127,7 @@ void Camquake_Find_Highlight (struct camquake_path_point *cursor) {
 }
 
 void Camquake_Change_Time(float x, float y, struct camquake_path_point *point, struct camquake_path *path) {
-	int i;
+	int i = 0;
 	if (x == 0 && y == 0 )
 		return;
 
